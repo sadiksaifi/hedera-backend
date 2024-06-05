@@ -20,7 +20,14 @@ import {
   TokenUnfreezeTransaction,
   TransferTransaction,
 } from "@hashgraph/sdk";
-import { TCashIn, TNewCoin } from "@/schemas/coin";
+import {
+  TAssociateCoin,
+  TCashIn,
+  TFreeze,
+  TNewCoin,
+  TTransfer,
+  TUnfreeze,
+} from "@/schemas/coin";
 
 SDK.log = {
   level: process.env.REACT_APP_LOG_LEVEL ?? "ERROR",
@@ -145,16 +152,7 @@ const grantKyc = async ({
   return;
 };
 
-const associate = async ({
-  account,
-  tokenId,
-}: {
-  account: {
-    key: string;
-    id: string;
-  };
-  tokenId: string;
-}) => {
+const associate = async ({ account, tokenId }: TAssociateCoin) => {
   try {
     const accountPrivateKey = PrivateKey.fromStringECDSA(account.key);
     //TOKEN ASSOCIATION WITH ACCOUNT
@@ -167,6 +165,7 @@ const associate = async ({
     let associateTxSubmit = await associateTx.execute(client);
     let associateRx = await associateTxSubmit.getReceipt(client);
 
+    return associateRx;
     console.log(`Token association with account: ${associateRx.status} \n`);
   } catch (err) {
     console.error(err);
@@ -174,17 +173,7 @@ const associate = async ({
   }
 };
 
-const transferCoin = async ({
-  id,
-  from,
-  to,
-  amount,
-}: {
-  id: string;
-  from: string;
-  to: string;
-  amount: number;
-}) => {
+const transferCoin = async ({ id, from, to, amount }: TTransfer) => {
   try {
     const tokenTransferTx = await new TransferTransaction()
       .addTokenTransfer(id, from, -1 * amount)
@@ -201,6 +190,7 @@ const transferCoin = async ({
     console.log(
       `\n- Stablecoin transfer from Treasury to Alice: ${tokenTransferRx.status} \n`
     );
+    return tokenTransferRx;
   } catch (err) {
     console.error(err);
     console.log("caught error ^");
@@ -227,15 +217,10 @@ const getTreasury = async ({ accountId: accountId }: { accountId: string }) => {
       tokens[CurrentCoin.id].tokenId
     }`
   );
+  return tokens;
 };
 
-const freezeStableCoin = async ({
-  addressId,
-  tokenId,
-}: {
-  addressId: string;
-  tokenId: string;
-}) => {
+const freezeStableCoin = async ({ addressId, tokenId }: TFreeze) => {
   //Freeze an account from transferring a token
   const signTx = await new TokenFreezeTransaction()
     .setAccountId(addressId)
@@ -255,15 +240,10 @@ const freezeStableCoin = async ({
   console.log(
     "The transaction consensus status " + transactionStatus.toString()
   );
+  return receipt;
 };
 
-const unfreezeStableCoin = async ({
-  addressId,
-  tokenId,
-}: {
-  addressId: string;
-  tokenId: string;
-}) => {
+const unfreezeStableCoin = async ({ addressId, tokenId }: TUnfreeze) => {
   //Unfreeze an account and freeze the unsigned transaction for signing
   const signTx = await new TokenUnfreezeTransaction()
     .setAccountId(addressId)
@@ -283,6 +263,7 @@ const unfreezeStableCoin = async ({
   console.log(
     "The transaction consensus status is " + transactionStatus.toString()
   );
+  return receipt;
 };
 
 export {
