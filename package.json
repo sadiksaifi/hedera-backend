@@ -1,0 +1,28 @@
+{
+    "name": "hedera-backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node dist/index.js",
+        "tsc": "tsc",
+        "build": "esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js --format=cjs"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "packageManager": "pnpm@9.0.6+sha1.648f6014eb363abb36618f2ba59282a9eeb3e879",
+    "dependencies": {
+        "@hashgraph/sdk": "^2.45.0",
+        "cors": "^2.8.5",
+        "express": "^4.19.2"
+    },
+    "devDependencies": {
+        "@types/cors": "^2.8.17",
+        "@types/express": "^4.17.21",
+        "@types/node": "^20.14.1",
+        "esbuild": "^0.21.4",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^5.4.5"
+    }
+}
