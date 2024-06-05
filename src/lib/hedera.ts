@@ -20,6 +20,7 @@ import {
   TokenUnfreezeTransaction,
   TransferTransaction,
 } from "@hashgraph/sdk";
+import { TCashIn, TNewCoin } from "@/schemas/coin";
 
 SDK.log = {
   level: process.env.REACT_APP_LOG_LEVEL ?? "ERROR",
@@ -27,15 +28,18 @@ SDK.log = {
 };
 
 const privateKey: RequestPrivateKey = {
-  key: "3030020100300706052b8104000a04220420343ad4938691fd2cdcb063796e88d12149ebee164e3b5b40540c25a5e943e0ea",
+  // key: "3030020100300706052b8104000a04220420343ad4938691fd2cdcb063796e88d12149ebee164e3b5b40540c25a5e943e0ea",
+  key: "302e020100300506032b657004220420c3d9a4a075713dd83238774cfe14f444453fb8072faaa4b0cc2a83f590aa194e",
   type: "ECDSA",
 };
 
 const publicKey: PublicKey = PublicKey.fromString(
-  "302d300706052b8104000a0322000341c16a68cbd4e1d76ee39485d50be3a61e4f39ac321cec6cc7feb11059417e37"
+  // "302d300706052b8104000a0322000341c16a68cbd4e1d76ee39485d50be3a61e4f39ac321cec6cc7feb11059417e37"
+  "302a300506032b657003210059b53075bb8a2b84d0530e23a047f65e279efa7e42d9a95d4fe03e99981e2da6"
 );
 const account: RequestAccount = {
-  accountId: "0.0.4384106",
+  // accountId: "0.0.4384106",
+  accountId: "0.0.4384114",
   privateKey: privateKey,
 };
 
@@ -59,15 +63,20 @@ const pK = PrivateKey.fromStringDer(privateKey.key);
 const client = Client.forTestnet();
 client.setOperator(account.accountId, pK);
 
-const createStableCoin = async () => {
+const createStableCoin = async ({
+  name,
+  symbol,
+  initialSupply,
+  maxTxFee,
+}: TNewCoin) => {
   try {
     //Create the transaction and freeze for manual signing
     const signTx = await new TokenCreateTransaction()
-      .setTokenName("My Token Name")
-      .setTokenSymbol("MTN")
+      .setTokenName(name)
+      .setTokenSymbol(symbol)
       .setTreasuryAccountId(account.accountId)
-      .setInitialSupply(5000)
-      .setMaxTransactionFee(new Hbar(30)) //Change the default max transaction fee
+      .setInitialSupply(initialSupply)
+      .setMaxTransactionFee(new Hbar(maxTxFee)) //Change the default max transaction fee
       .setAdminKey(publicKey)
       .setSupplyKey(publicKey)
       .setFreezeKey(publicKey)
@@ -84,23 +93,25 @@ const createStableCoin = async () => {
     const tokenId = receipt.tokenId;
 
     console.log("The new token ID is " + tokenId);
-    //
+
+    return receipt;
   } catch (e) {
     if (e instanceof Error) console.log(e.message);
   }
 };
 
-const cashIn = async ({ tokenId }: { tokenId: string }) => {
+const cashIn = async ({ tokenId, amount }: TCashIn) => {
   try {
     const signTx = await new TokenMintTransaction()
       .setTokenId(tokenId)
-      .setAmount(1000)
+      .setAmount(amount)
       // .setMaxTransactionFee(new Hbar(20)) //Use when HBAR is under 10 cents
       .freezeWith(client)
       .sign(pK);
 
     const txResponse = await signTx.execute(client);
     const receipt = await txResponse.getReceipt(client);
+    return receipt;
     console.log(
       `The transaction consensus status ${receipt.status.toString()}`
     );
@@ -212,7 +223,8 @@ const getTreasury = async ({ accountId: accountId }: { accountId: string }) => {
   console.log(tokens);
 
   console.log(
-    `- Treasury balance: ${tokens[CurrentCoin.id].balance} units of token ID ${tokens[CurrentCoin.id].tokenId
+    `- Treasury balance: ${tokens[CurrentCoin.id].balance} units of token ID ${
+      tokens[CurrentCoin.id].tokenId
     }`
   );
 };

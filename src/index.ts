@@ -9,10 +9,11 @@ declare global {
 }
 
 (async function main() {
+  app.use(express.json());
   app.use(
     cors({
       origin: "*",
-    }),
+    })
   );
 
   app.use("/api", await router());
