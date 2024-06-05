@@ -26,6 +26,7 @@ import {
   TFreeze,
   TNewCoin,
   TTransfer,
+  TTreasuryData,
   TUnfreeze,
 } from "@/schemas/coin";
 
@@ -201,7 +202,7 @@ const transferCoin = async ({ id, from, to, amount }: TTransfer) => {
  *
  * get balance of `$accountId` for BaldevCoin only
  */
-const getTreasury = async ({ accountId: accountId }: { accountId: string }) => {
+const getTreasury = async ({ accountId }: TTreasuryData) => {
   const balanceCheckTx = await new AccountBalanceQuery()
     .setAccountId(accountId)
     .execute(client);
@@ -212,12 +213,12 @@ const getTreasury = async ({ accountId: accountId }: { accountId: string }) => {
 
   console.log(tokens);
 
-  console.log(
-    `- Treasury balance: ${tokens[CurrentCoin.id].balance} units of token ID ${
-      tokens[CurrentCoin.id].tokenId
-    }`
-  );
-  return tokens;
+  // console.log(
+  //   `- Treasury balance: ${tokens[CurrentCoin.id].balance} units of token ID ${
+  //     tokens[CurrentCoin.id].tokenId
+  //   }`
+  // );
+  return balanceCheckTx.toJSON().tokens;
 };
 
 const freezeStableCoin = async ({ addressId, tokenId }: TFreeze) => {
