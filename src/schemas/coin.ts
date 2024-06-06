@@ -21,6 +21,14 @@ export const SDeleteCoin = zod.object({
 });
 export type TDeleteCoin = zod.infer<typeof SDeleteCoin>;
 
+// Coin Burn
+export const SCoinBurn = zod.object({
+  supplyKey: zod.string(),
+  token: zod.string(),
+  amount: zod.number(),
+});
+export type TCoinBurn = zod.infer<typeof SCoinBurn>;
+
 // Cash In
 export const SCashIn = zod.object({
   tokenId: zod.string(),

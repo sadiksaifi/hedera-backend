@@ -341,11 +341,11 @@ const wipe = async ({
 };
 
 const burn = async ({
-  supplyKey,
+  // supplyKey,
   token,
   amount,
 }: {
-  supplyKey: string;
+  // supplyKey: string;
   token: string;
   amount: number;
 }) => {
@@ -354,7 +354,7 @@ const burn = async ({
       .setTokenId(token)
       .setAmount(amount)
       .freezeWith(client)
-      .sign(PrivateKey.fromStringDer(supplyKey) /* supply key*/);
+      .sign(PrivateKey.fromStringDer(publicKey.toStringDer()) /* supply key*/);
 
     //Submit the transaction to a Hedera network
     const txResponse = await signTx.execute(client);
