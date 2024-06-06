@@ -1,5 +1,11 @@
 import * as zod from "zod";
 
+// Coin getter schema
+export const SCoinInfo = zod.object({
+  tokenId: zod.string(),
+});
+export type TCoinInfo = zod.infer<typeof SCoinInfo>;
+
 // New Coin
 export const SNewCoin = zod.object({
   name: zod.string(),
@@ -8,6 +14,12 @@ export const SNewCoin = zod.object({
   maxTxFee: zod.number(),
 });
 export type TNewCoin = zod.infer<typeof SNewCoin>;
+
+// Coin Delete
+export const SDeleteCoin = zod.object({
+  tokenId: zod.string(),
+});
+export type TDeleteCoin = zod.infer<typeof SDeleteCoin>;
 
 // Cash In
 export const SCashIn = zod.object({
