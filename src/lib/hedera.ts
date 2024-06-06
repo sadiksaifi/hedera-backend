@@ -49,17 +49,17 @@ SDK.log = {
 const privateKey: RequestPrivateKey = {
   // key:
   // "3030020100300706052b8104000a04220420343ad4938691fd2cdcb063796e88d12149ebee164e3b5b40540c25a5e943e0ea",
-  key: "3030020100300706052b8104000a0422042091c9f0aaa4c3353fa40b4e1c4185839ce97f4bd4ccdb92084c242a8b2cd36158",
+  key: process.env.PRIVATE_KEY!,
   type: "ECDSA",
 };
 
 const publicKey: PublicKey = PublicKey.fromString(
   // "302d300706052b8104000a0322000341c16a68cbd4e1d76ee39485d50be3a61e4f39ac321cec6cc7feb11059417e37"
-  "302d300706052b8104000a032200039f7a137340e8d5d6e331d15749f3207ff861bd3f2630668845ba501eb3df5914"
+  process.env.PUBLIC_KEY!
 );
 const account: RequestAccount = {
   // accountId: "0.0.4384106",
-  accountId: "0.0.4387498",
+  accountId: process.env.ACCOUNT_ID!,
   privateKey: privateKey,
 };
 
