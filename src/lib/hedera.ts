@@ -30,6 +30,7 @@ import {
   TokenBurnTransaction,
   TokenPauseTransaction,
   TokenUnpauseTransaction,
+  TokenUpdateTransaction,
 } from "@hashgraph/sdk";
 import {
   KYCRequest,
@@ -78,7 +79,7 @@ const account: RequestAccount = {
 //   HederaTokenManagerAddressTestnet = "0.0.2167020",
 // }
 
-const pK = PrivateKey.fromStringDer(privateKey.key);
+export const pK = PrivateKey.fromStringDer(privateKey.key);
 const client = Client.forTestnet();
 client.setOperator(account.accountId, pK);
 
@@ -462,6 +463,7 @@ const deleteStableCoin = async ({ tokenId }: TDeleteCoin) => {
 // };
 
 export {
+  client,
   createStableCoin,
   cashIn,
   grantKyc,

@@ -9,6 +9,7 @@ import { router as freezeCoin } from "./coin/freeze/router";
 import { router as unfreezeCoin } from "./coin/unfreeze/router";
 import { router as treasury } from "./treasury/router";
 import { router as getInfo } from "./coin/get-info/router";
+import { router as updateTokenRouter } from "./role/update/router";
 import { Router } from "express";
 
 export const router: ExpressRouter = async () => {
@@ -28,6 +29,7 @@ export const router: ExpressRouter = async () => {
   router.use("/coin/unfreeze", await unfreezeCoin());
 
   router.use("/treasury", await treasury());
+  router.use("/role/update", await updateTokenRouter());
 
   return router;
 };
