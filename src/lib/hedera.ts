@@ -9,7 +9,6 @@ import {
   TUnfreeze,
 } from "@/schemas/coin";
 import {
-  AccountBalanceQuery,
   Client,
   Hbar,
   PrivateKey,
@@ -27,6 +26,10 @@ import {
   TokenMintTransaction,
   TokenUnfreezeTransaction,
   TransferTransaction,
+  TokenWipeTransaction,
+  TokenBurnTransaction,
+  TokenPauseTransaction,
+  TokenUnpauseTransaction,
 } from "@hashgraph/sdk";
 import {
   KYCRequest,
@@ -130,9 +133,6 @@ const cashIn = async ({ tokenId, amount }: TCashIn) => {
     const txResponse = await signTx.execute(client);
     const receipt = await txResponse.getReceipt(client);
     return receipt;
-    console.log(
-      `The transaction consensus status ${receipt.status.toString()}`
-    );
   } catch (err) {
     console.error(err);
     if (err instanceof Error) {
@@ -177,7 +177,6 @@ const associate = async ({ account, tokenId }: TAssociateCoin) => {
     let associateRx = await associateTxSubmit.getReceipt(client);
 
     return associateRx;
-    console.log(`Token association with account: ${associateRx.status} \n`);
   } catch (err) {
     if (
       err instanceof StatusError ||
@@ -304,6 +303,135 @@ const unfreezeStableCoin = async ({ addressId, tokenId }: TUnfreeze) => {
   return receipt;
 };
 
+const wipe = async ({
+  privateKey,
+  token,
+  amount,
+  accountId,
+}: {
+  privateKey: string;
+  token: string;
+  amount: number;
+  accountId: string;
+}) => {
+  try {
+    const tx = await new TokenWipeTransaction()
+      .setAccountId(accountId)
+      .setTokenId(token)
+      .setAmount(amount)
+      .freezeWith(client)
+      .sign(PrivateKey.fromStringDer(privateKey));
+
+    const signTx = await tx.sign(pK /* wipeKey */);
+    const txResponse = await signTx.execute(client);
+
+    //Request the receipt of the transaction
+    const receipt = await txResponse.getReceipt(client);
+
+    //Obtain the transaction consensus status
+    const transactionStatus = receipt.status;
+
+    return transactionStatus;
+  } catch (err) {
+    console.dir(err, { depth: null });
+    if (err instanceof Error) console.log(err.message);
+
+    throw new Error("failed to wipe amount");
+  }
+};
+
+const burn = async ({
+  supplyKey,
+  token,
+  amount,
+}: {
+  supplyKey: string;
+  token: string;
+  amount: number;
+}) => {
+  try {
+    const signTx = await new TokenBurnTransaction()
+      .setTokenId(token)
+      .setAmount(amount)
+      .freezeWith(client)
+      .sign(PrivateKey.fromStringDer(supplyKey) /* supply key*/);
+
+    //Submit the transaction to a Hedera network
+    const txResponse = await signTx.execute(client);
+
+    //Request the receipt of the transaction
+    const receipt = await txResponse.getReceipt(client);
+
+    //Get the transaction consensus status
+    const transactionStatus = receipt.status;
+    return transactionStatus;
+
+    //v2.0.7
+  } catch (err) {
+    console.dir(err, { depth: null });
+    if (err instanceof Error) console.log(err.message);
+    throw new Error("failed to burn amount");
+  }
+};
+
+const pause = async ({
+  pauseKey,
+  token,
+}: {
+  pauseKey: string;
+  token: string;
+}) => {
+  try {
+    const signTx = await new TokenPauseTransaction()
+      .setTokenId(token)
+      .freezeWith(client)
+      .sign(PrivateKey.fromStringDer(pauseKey));
+
+    //Submit the transaction to a Hedera network
+    const txResponse = await signTx.execute(client);
+
+    //Request the receipt of the transaction
+    const receipt = await txResponse.getReceipt(client);
+
+    //Get the transaction consensus status
+    const transactionStatus = receipt.status;
+
+    return transactionStatus;
+  } catch (err) {
+    console.dir(err, { depth: null });
+  }
+};
+
+const unpause = async ({
+  pauseKey,
+  token,
+}: {
+  pauseKey: string;
+  token: string;
+}) => {
+  try {
+    const signTx = await new TokenUnpauseTransaction()
+      .setTokenId(token)
+      .freezeWith(client)
+      .sign(PrivateKey.fromStringDer(pauseKey) /* pauseKey */);
+
+    //Submit the transaction to a Hedera network
+    const txResponse = await signTx.execute(client);
+
+    //Request the receipt of the transaction
+    const receipt = await txResponse.getReceipt(client);
+
+    //Get the transaction consensus status
+    const transactionStatus = receipt.status;
+
+    return transactionStatus;
+  } catch (err) {
+    console.dir(err, { depth: null });
+    if (err instanceof Error) console.log(err.message);
+    throw new Error("failed to unpause the token");
+  }
+};
+
 const deleteStableCoin = async ({ tokenId }: TDeleteCoin) => {
   const transaction = new TokenDeleteTransaction()
     .setTokenId(tokenId)
@@ -314,6 +442,24 @@ const deleteStableCoin = async ({ tokenId }: TDeleteCoin) => {
   const transactionStatus = receipt.status;
   return transactionStatus.toString();
 };
+
+// const getAccountDetails = async (account: string) => {
+//   try {
+//     const query = new AccountInfoQuery().setAccountId(account);
+//
+//     //Sign with client operator private key and submit the query to a Hedera network
+//     const accountInfo = await query.execute(client);
+//
+//     //Print the account info to the console
+//     console.log(accountInfo);
+//     return accountInfo.tokenRelationships.toJSON();
+//   } catch (err) {
+//     console.dir(err, { depth: null });
+//     if (err instanceof Error) console.log(err.message);
+//
+//     throw new Error("failed to get account details");
+//   }
+// };
 
 export {
   createStableCoin,
@@ -326,4 +472,8 @@ export {
   freezeStableCoin,
   unfreezeStableCoin,
   deleteStableCoin,
+  wipe,
+  burn,
+  pause,
+  unpause,
 };
