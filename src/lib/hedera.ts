@@ -1,13 +1,11 @@
-import {
-  TAssociateCoin,
-  TCashIn,
-  TDeleteCoin,
-  TFreeze,
-  TNewCoin,
-  TTransfer,
-  TTreasuryData,
-  TUnfreeze,
-} from "@/schemas/coin";
+import { TTreasuryData } from "@/schemas/coin";
+import { TUnfreeze } from "@/schemas/coin/unfreeze";
+import { TFreeze } from "@/schemas/coin/freeze";
+import { TNewCoin } from "@/schemas/coin/create";
+import { TCashIn } from "@/schemas/coin/cashin";
+import { TTransfer } from "@/schemas/coin/transfer";
+import { TAssociateCoin } from "@/schemas/coin/associate";
+import { TDeleteCoin } from "@/schemas/coin/delete";
 import {
   Client,
   Hbar,
@@ -40,6 +38,8 @@ import {
   SDK,
   StableCoin,
 } from "@hashgraph/stablecoin-npm-sdk";
+import { TCoinBurn } from "@/schemas/coin/burn";
+import { TCoinInfo } from "@/schemas/coin/getInfo";
 
 SDK.log = {
   level: process.env.REACT_APP_LOG_LEVEL ?? "ERROR",
@@ -89,57 +89,57 @@ const createStableCoin = async ({
   initialSupply,
   maxTxFee,
 }: TNewCoin) => {
-  try {
-    // Create the transaction and freeze for manual signing
-    const signTx = await new TokenCreateTransaction()
-      .setTokenName(name)
-      .setTokenSymbol(symbol)
-      .setTreasuryAccountId(account.accountId)
-      .setInitialSupply(initialSupply)
-      .setMaxTransactionFee(new Hbar(maxTxFee)) // Change the default max transaction fee
-      .setAdminKey(publicKey)
-      .setSupplyKey(publicKey)
-      .setFreezeKey(publicKey)
-      .freezeWith(client)
-      .sign(pK);
+  // try {
+  // Create the transaction and freeze for manual signing
+  const signTx = await new TokenCreateTransaction()
+    .setTokenName(name)
+    .setTokenSymbol(symbol)
+    .setTreasuryAccountId(account.accountId)
+    .setInitialSupply(initialSupply)
+    .setMaxTransactionFee(new Hbar(maxTxFee)) // Change the default max transaction fee
+    .setAdminKey(publicKey)
+    .setSupplyKey(publicKey)
+    .setFreezeKey(publicKey)
+    .freezeWith(client)
+    .sign(pK);
 
-    // Sign the transaction with the client operator private key and submit to a
-    // Hedera network
-    const txResponse = await signTx.execute(client);
+  // Sign the transaction with the client operator private key and submit to a
+  // Hedera network
+  const txResponse = await signTx.execute(client);
 
-    // Get the receipt of the transaction
-    const receipt = await txResponse.getReceipt(client);
+  // Get the receipt of the transaction
+  const receipt = await txResponse.getReceipt(client);
 
-    // Get the token ID from the receipt
-    const tokenId = receipt.tokenId;
+  // Get the token ID from the receipt
+  const tokenId = receipt.tokenId;
 
-    console.log("The new token ID is " + tokenId);
+  console.log("The new token ID is " + tokenId);
 
-    return receipt;
-  } catch (e) {
-    if (e instanceof Error) console.log(e.message);
-  }
+  return receipt;
+  // } catch (e) {
+  //   if (e instanceof Error) console.log(e.message);
+  // }
 };
 
 const cashIn = async ({ tokenId, amount }: TCashIn) => {
-  try {
-    const signTx = await new TokenMintTransaction()
-      .setTokenId(tokenId)
-      .setAmount(amount)
-      // .setMaxTransactionFee(new Hbar(20)) //Use when HBAR is
-      // under 10 cents
-      .freezeWith(client)
-      .sign(pK);
+  // try {
+  const signTx = await new TokenMintTransaction()
+    .setTokenId(tokenId)
+    .setAmount(amount)
+    // .setMaxTransactionFee(new Hbar(20)) //Use when HBAR is
+    // under 10 cents
+    .freezeWith(client)
+    .sign(pK);
 
-    const txResponse = await signTx.execute(client);
-    const receipt = await txResponse.getReceipt(client);
-    return receipt;
-  } catch (err) {
-    console.error(err);
-    if (err instanceof Error) {
-      console.log("error caught ^");
-    }
-  }
+  const txResponse = await signTx.execute(client);
+  const receipt = await txResponse.getReceipt(client);
+  return receipt;
+  // } catch (err) {
+  //   console.error(err);
+  //   if (err instanceof Error) {
+  //     console.log("error caught ^");
+  //   }
+  // }
 };
 
 const grantKyc = async ({
@@ -165,61 +165,40 @@ const grantKyc = async ({
 };
 
 const associate = async ({ account, tokenId }: TAssociateCoin) => {
-  try {
-    const accountPrivateKey = PrivateKey.fromStringECDSA(account.key);
-    // TOKEN ASSOCIATION WITH ACCOUNT
-    let associateTx = await new TokenAssociateTransaction()
-      .setAccountId(account.id)
-      .setTokenIds([tokenId])
-      .freezeWith(client)
-      .sign(PrivateKey.fromStringECDSA(account.key));
+  const accountPrivateKey = PrivateKey.fromStringECDSA(account.key);
+  // TOKEN ASSOCIATION WITH ACCOUNT
+  let associateTx = await new TokenAssociateTransaction()
+    .setAccountId(account.id)
+    .setTokenIds([tokenId])
+    .freezeWith(client)
+    .sign(PrivateKey.fromStringECDSA(account.key));
 
-    let associateTxSubmit = await associateTx.execute(client);
-    let associateRx = await associateTxSubmit.getReceipt(client);
+  let associateTxSubmit = await associateTx.execute(client);
+  let associateRx = await associateTxSubmit.getReceipt(client);
 
-    return associateRx;
-  } catch (err) {
-    if (
-      err instanceof StatusError ||
-      err instanceof ReceiptStatusError ||
-      err instanceof BadKeyError ||
-      err instanceof BadMnemonicError ||
-      err instanceof PrecheckStatusError
-    )
-      throw new Error(err.message);
-    else {
-      throw new Error("Error Associating, recheck the account id and key");
-      // console.error(err);
-      // console.log("error caught ^");
-    }
-  }
+  return associateRx;
 };
 
 const transferCoin = async ({ id, from, to, amount }: TTransfer) => {
-  try {
-    const tokenTransferTx = await new TransferTransaction()
-      .addTokenTransfer(id, from, -1 * amount)
-      .addTokenTransfer(id, to, amount)
-      .freezeWith(client)
-      .sign(pK);
+  const tokenTransferTx = await new TransferTransaction()
+    .addTokenTransfer(id, from, -1 * amount)
+    .addTokenTransfer(id, to, amount)
+    .freezeWith(client)
+    .sign(pK);
 
-    const tokenTransferSubmit = await tokenTransferTx.execute(client);
+  const tokenTransferSubmit = await tokenTransferTx.execute(client);
 
-    const tokenTransferRx = await tokenTransferSubmit.getReceipt(client);
+  const tokenTransferRx = await tokenTransferSubmit.getReceipt(client);
 
-    console.log(tokenTransferSubmit.toJSON());
-    console.log(tokenTransferRx.toJSON());
-    console.log(
-      `\n- Stablecoin transfer from Treasury to Alice: ${tokenTransferRx.status} \n`
-    );
-    return tokenTransferRx;
-  } catch (err) {
-    console.error(err);
-    console.log("caught error ^");
-  }
+  console.log(tokenTransferSubmit.toJSON());
+  console.log(tokenTransferRx.toJSON());
+  console.log(
+    `\n- Stablecoin transfer from Treasury to Alice: ${tokenTransferRx.status} \n`
+  );
+  return tokenTransferRx;
 };
 
-const getCoinInfo = async ({ tokenId }: { tokenId: string }) => {
+const getCoinInfo = async ({ tokenId }: TCoinInfo) => {
   const query = new TokenInfoQuery().setTokenId(tokenId);
   const coin = await query.execute(client);
   return coin;
@@ -345,34 +324,23 @@ const burn = async ({
   // supplyKey,
   token,
   amount,
-}: {
-  // supplyKey: string;
-  token: string;
-  amount: number;
-}) => {
-  try {
-    const signTx = await new TokenBurnTransaction()
-      .setTokenId(token)
-      .setAmount(amount)
-      .freezeWith(client)
-      .sign(PrivateKey.fromStringDer(publicKey.toStringDer()) /* supply key*/);
+}: TCoinBurn) => {
+  const signTx = await new TokenBurnTransaction()
+    .setTokenId(token)
+    .setAmount(amount)
+    .freezeWith(client)
+    .sign(PrivateKey.fromStringDer(publicKey.toStringDer()) /* supply key*/);
 
-    //Submit the transaction to a Hedera network
-    const txResponse = await signTx.execute(client);
+  //Submit the transaction to a Hedera network
+  const txResponse = await signTx.execute(client);
 
-    //Request the receipt of the transaction
-    const receipt = await txResponse.getReceipt(client);
+  //Request the receipt of the transaction
+  const receipt = await txResponse.getReceipt(client);
 
-    //Get the transaction consensus status
-    const transactionStatus = receipt.status;
-    return transactionStatus;
+  //Get the transaction consensus status
+  return receipt;
 
-    //v2.0.7
-  } catch (err) {
-    console.dir(err, { depth: null });
-    if (err instanceof Error) console.log(err.message);
-    throw new Error("failed to burn amount");
-  }
+  //v2.0.7
 };
 
 const pause = async ({
