@@ -7,9 +7,13 @@ export const router: ExpressRouter = async () => {
   const router = Router();
 
   router.post("/", validateRequest({ body: SFreeze }), async (req, res) => {
-    const body = req.body;
-    const receipt = await freezeStableCoin(body);
-    res.json({ data: { receipt } });
+    try {
+      const body = req.body;
+      const receipt = await freezeStableCoin(body);
+      res.json({ data: { receipt } });
+    } catch (error) {
+      res.json({ error: "Error freezing" });
+    }
   });
 
   return router;

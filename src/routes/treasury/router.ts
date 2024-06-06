@@ -12,6 +12,7 @@ export const router: ExpressRouter = async () => {
     async (req, res) => {
       const query = req.query;
       const data = await getTreasury(query);
+      console.log(data);
       res.json({ data });
     }
   );

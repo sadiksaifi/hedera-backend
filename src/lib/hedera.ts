@@ -14,6 +14,11 @@ import {
   Hbar,
   PrivateKey,
   PublicKey,
+  StatusError,
+  ReceiptStatusError,
+  BadKeyError,
+  BadMnemonicError,
+  PrecheckStatusError,
   TokenAssociateTransaction,
   TokenCreateTransaction,
   TokenDeleteTransaction,
@@ -166,7 +171,7 @@ const associate = async ({ account, tokenId }: TAssociateCoin) => {
       .setAccountId(account.id)
       .setTokenIds([tokenId])
       .freezeWith(client)
-      .sign(pK);
+      .sign(PrivateKey.fromStringECDSA(account.key));
 
     let associateTxSubmit = await associateTx.execute(client);
     let associateRx = await associateTxSubmit.getReceipt(client);
@@ -174,8 +179,19 @@ const associate = async ({ account, tokenId }: TAssociateCoin) => {
     return associateRx;
     console.log(`Token association with account: ${associateRx.status} \n`);
   } catch (err) {
-    console.error(err);
-    console.log("error caught ^");
+    if (
+      err instanceof StatusError ||
+      err instanceof ReceiptStatusError ||
+      err instanceof BadKeyError ||
+      err instanceof BadMnemonicError ||
+      err instanceof PrecheckStatusError
+    )
+      throw new Error(err.message);
+    else {
+      throw new Error("Error Associating, recheck the account id and key");
+      // console.error(err);
+      // console.log("error caught ^");
+    }
   }
 };
 
