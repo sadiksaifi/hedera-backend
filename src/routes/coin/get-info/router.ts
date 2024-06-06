@@ -9,7 +9,8 @@ export const router: ExpressRouter = async () => {
   router.get("/", validateRequest({ query: SCoinInfo }), async (req, res) => {
     try {
       const { tokenId, ...token } = await getCoinInfo(req.query);
-      res.json({
+      console.log("Helo");
+      res.status(200).json({
         data: {
           ...token,
           supplyType: token.supplyType?.toString(),
@@ -18,7 +19,7 @@ export const router: ExpressRouter = async () => {
         },
       });
     } catch (error) {
-      res.json({ error: "Something went wrong", status: 400 });
+      res.status(400).json({ error: "Something went wrong" });
     }
   });
 
