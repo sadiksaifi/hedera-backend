@@ -11,6 +11,7 @@ import { router as treasury } from "./treasury/router";
 import { router as getInfo } from "./coin/get-info/router";
 import { router as updateTokenRouter } from "./role/update/router";
 import { router as burnCoin } from "./coin/burn/router";
+import { router as getBalances } from "./coin/get-balances/router";
 import { Router } from "express";
 
 export const router: ExpressRouter = async () => {
@@ -24,6 +25,7 @@ export const router: ExpressRouter = async () => {
   router.use("/coin/cashin", await cashInCoin());
   router.use("/coin/get-info", await getInfo());
   router.use("/coin/burn", await burnCoin());
+  router.use("/coin/get-balances", await getBalances());
   router.use("/treasury", await treasury());
   // =======================================================
 
