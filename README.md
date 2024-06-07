@@ -10,3 +10,9 @@ Don't forget to create a .env and add the keys generated from the [Hedera Portal
     - Those same keys are used for signing other operations related to the token such as transfer coin and Getting Coin Info
 
 - For account speific operations like getting the treasury balance of a user, you should provide the accountId from the frontend, that is supposed to be provided through .env in the frontend
+
+# TESTING
+
+for testing purpose you can log into the hedera portal and use the account details provided there
+email(mail generated from tempmail): padivi3729@cnurbano.com
+password:M5V2Z0M3
