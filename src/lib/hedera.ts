@@ -11,11 +11,6 @@ import {
   Hbar,
   PrivateKey,
   PublicKey,
-  StatusError,
-  ReceiptStatusError,
-  BadKeyError,
-  BadMnemonicError,
-  PrecheckStatusError,
   TokenAssociateTransaction,
   TokenCreateTransaction,
   TokenDeleteTransaction,
@@ -28,7 +23,6 @@ import {
   TokenBurnTransaction,
   TokenPauseTransaction,
   TokenUnpauseTransaction,
-  TokenUpdateTransaction,
 } from "@hashgraph/sdk";
 import {
   KYCRequest,
