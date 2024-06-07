@@ -4,7 +4,7 @@ Visit Postman:https://orange-satellite-182487.postman.co/workspace/BLINKER-SHARE
 
 Don't forget to create a .env and add the keys generated from the [Hedera Portal](https://portal.hedera.com/dashboard)
 
-### Uses of different env variables
+### ENV variables
 
     - To create a stable coin as you provide data, the treasury keys stored in the .env file will be used to create the stable coin
     - Those same keys are used for signing other operations related to the token such as transfer coin and Getting Coin Info
@@ -16,3 +16,5 @@ Don't forget to create a .env and add the keys generated from the [Hedera Portal
 for testing purpose you can log into the hedera portal and use the account details provided there
 email(mail generated from tempmail): padivi3729@cnurbano.com
 password:M5V2Z0M3
+
+# DATABASE (Postgresql + Prisma)
