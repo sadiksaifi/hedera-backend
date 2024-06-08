@@ -14,6 +14,7 @@ import { router as burnCoin } from "./coin/burn/router";
 import { router as getBalances } from "./coin/get-balances/router";
 import { router as createUser } from "./auth/create-user/router";
 import { router as login } from "./auth/login/router";
+import { router as whoAmI } from "./auth/whoami/router";
 import { Router } from "express";
 import { authorizeMaster } from "@/middlewares/authorizeMaster";
 import { authorizeMember } from "@/middlewares/authorizeMember";
@@ -28,6 +29,7 @@ export const router: ExpressRouter = async () => {
   // ====================== Auth Routes ====================
   router.use("/auth/create-user", authorizeMaster, await createUser());
   router.use("/auth/login", await login());
+  router.use("/auth/whoami", await whoAmI());
   // =======================================================
 
   // TODO: implement errorHandler function in all the routes

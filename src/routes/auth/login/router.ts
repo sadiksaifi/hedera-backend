@@ -1,11 +1,10 @@
-import { lucia, prismaClient } from "@/lib/auth";
+import { lucia } from "@/lib/auth";
 import { SAuthUser } from "@/schemas/auth";
 import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
 import { validateRequestBody } from "zod-express-middleware";
 import bcryptjs from "bcryptjs";
 import { errorHandler } from "@/middlewares/errorHandler";
-import { Session } from "lucia";
 
 const prisma = new PrismaClient();
 export const router: ExpressRouter = async () => {
