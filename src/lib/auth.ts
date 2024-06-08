@@ -8,11 +8,9 @@ const lucia = new Lucia(prismaAdapter, {
   sessionExpiresIn: new TimeSpan(15, "d"),
   sessionCookie: {
     attributes: {
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
     },
-  },
-  getSessionAttributes: (attributes) => {
-    return {};
   },
 });
 
@@ -20,10 +18,7 @@ const lucia = new Lucia(prismaAdapter, {
 declare module "lucia" {
   interface Register {
     Lucia: typeof lucia;
-    DatabaseSessionAttributes: DatabaseSessionAttributes;
   }
-
-  interface DatabaseSessionAttributes {}
 }
 
 export { lucia, client as prismaClient };

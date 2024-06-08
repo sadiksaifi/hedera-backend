@@ -9,8 +9,9 @@ datasource db {
 
 model User {
   id              String         @id @default(cuid())
-  email           String
+  email           String         @unique
   password        String
+  role            Role           @default(MEMBER)
   sessions        Session[]
 }
 
@@ -19,4 +20,12 @@ model Session {
   userId          String
   expiresAt       DateTime
   user            User           @relation(references: [id], fields: [userId], onDelete: Cascade)
+}
+
+
+// ENUMS
+enum Role {
+  MEMBER
+  MASTER
+  ADMIN
 }

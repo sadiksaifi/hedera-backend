@@ -12,7 +12,10 @@ import { router as getInfo } from "./coin/get-info/router";
 import { router as updateTokenRouter } from "./role/update/router";
 import { router as burnCoin } from "./coin/burn/router";
 import { router as getBalances } from "./coin/get-balances/router";
+import { router as createUser } from "./auth/create-user/router";
+import { router as login } from "./auth/login/router";
 import { Router } from "express";
+import { authorizeMaster } from "@/middlewares/authorizeMaster";
 
 export const router: ExpressRouter = async () => {
   const router = Router();
@@ -20,6 +23,12 @@ export const router: ExpressRouter = async () => {
   router.use("/foo", await fooRouter());
   router.use("/hello", await helloRouter());
 
+  // ====================== Auth Routes ====================
+  router.use("/auth/create-user", authorizeMaster, await createUser());
+  router.use("/auth/login", await login());
+  // =======================================================
+
+  // TODO: implement errorHandler function in all the routes
   // ====================== Coin routes ======================
   router.use("/coin/create", await createCoin());
   router.use("/coin/cashin", await cashInCoin());
