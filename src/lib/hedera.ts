@@ -41,19 +41,15 @@ SDK.log = {
 };
 
 const privateKey: RequestPrivateKey = {
-  // key:
-  // "3030020100300706052b8104000a04220420343ad4938691fd2cdcb063796e88d12149ebee164e3b5b40540c25a5e943e0ea",
-  key: process.env.PRIVATE_KEY!,
+  key: process.env.TREASURY_PVT_KEY!,
   type: "ECDSA",
 };
 
 const publicKey: PublicKey = PublicKey.fromString(
-  // "302d300706052b8104000a0322000341c16a68cbd4e1d76ee39485d50be3a61e4f39ac321cec6cc7feb11059417e37"
-  process.env.PUBLIC_KEY!
+  process.env.TREASURY_PUB_KEY!
 );
 const account: RequestAccount = {
-  // accountId: "0.0.4384106",
-  accountId: process.env.ACCOUNT_ID!,
+  accountId: process.env.TREASURY_ID!,
   privateKey: privateKey,
 };
 
@@ -83,7 +79,6 @@ const createStableCoin = async ({
   initialSupply,
   maxTxFee,
 }: TNewCoin) => {
-  // try {
   // Create the transaction and freeze for manual signing
   const signTx = await new TokenCreateTransaction()
     .setTokenName(name)
@@ -108,11 +103,7 @@ const createStableCoin = async ({
   const tokenId = receipt.tokenId;
 
   console.log("The new token ID is " + tokenId);
-
   return receipt;
-  // } catch (e) {
-  //   if (e instanceof Error) console.log(e.message);
-  // }
 };
 
 const cashIn = async ({ tokenId, amount }: TCashIn) => {
@@ -323,7 +314,7 @@ const burn = async ({
     .setTokenId(token)
     .setAmount(amount)
     .freezeWith(client)
-    .sign(PrivateKey.fromStringDer(publicKey.toStringDer()) /* supply key*/);
+    .sign(PrivateKey.fromStringDer(publicKey.toStringDer()));
 
   //Submit the transaction to a Hedera network
   const txResponse = await signTx.execute(client);

@@ -4,10 +4,7 @@ import { router } from "@/routes/route";
 import { config } from "dotenv";
 import cookieParser from "cookie-parser";
 import { Session, User } from "lucia";
-import {
-  compareHostAndOrigin,
-  sessionSetter,
-} from "./middlewares/sessionCookieValidator";
+import { getSession } from "./middlewares/sessionCookieValidator";
 
 const app = express();
 config();
@@ -25,8 +22,7 @@ declare global {
 (async function main() {
   app.use(cookieParser());
   app.use(express.json());
-  app.use(compareHostAndOrigin);
-  app.use(sessionSetter);
+  app.use(getSession);
 
   app.use(
     cors({

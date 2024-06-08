@@ -16,6 +16,8 @@ import { router as createUser } from "./auth/create-user/router";
 import { router as login } from "./auth/login/router";
 import { Router } from "express";
 import { authorizeMaster } from "@/middlewares/authorizeMaster";
+import { authorizeMember } from "@/middlewares/authorizeMember";
+import { authorizeAdmin } from "@/middlewares/authorizeAdmin";
 
 export const router: ExpressRouter = async () => {
   const router = Router();
@@ -30,29 +32,29 @@ export const router: ExpressRouter = async () => {
 
   // TODO: implement errorHandler function in all the routes
   // ====================== Coin routes ======================
-  router.use("/coin/create", await createCoin());
-  router.use("/coin/cashin", await cashInCoin());
-  router.use("/coin/get-info", await getInfo());
-  router.use("/coin/burn", await burnCoin());
-  router.use("/coin/get-balances", await getBalances());
-  router.use("/treasury", await treasury());
+  router.use("/coin/create", authorizeMember, await createCoin());
+  router.use("/coin/cashin", authorizeMember, await cashInCoin());
+  router.use("/coin/get-info", authorizeMember, await getInfo());
+  router.use("/coin/burn", authorizeMember, await burnCoin());
+  router.use("/coin/get-balances", authorizeMember, await getBalances());
+  router.use("/treasury", authorizeMember, await treasury());
   // =======================================================
 
   // ====================== Transaction routes ==============
-  router.use("/coin/associate", await associateCoin());
-  router.use("/coin/transfer", await transferCoin());
+  router.use("/coin/associate", authorizeMember, await associateCoin());
+  router.use("/coin/transfer", authorizeMember, await transferCoin());
   // =======================================================
 
   // ====================== Blacklist routes ==============
-  router.use("/coin/freeze", await freezeCoin());
-  router.use("/coin/unfreeze", await unfreezeCoin());
+  router.use("/coin/freeze", authorizeMember, await freezeCoin());
+  router.use("/coin/unfreeze", authorizeMember, await unfreezeCoin());
   // ======================================================
 
   // ====================== Danger zone routes ==============
-  router.use("/coin/delete", await deleteCoin());
+  router.use("/coin/delete", authorizeMember, await deleteCoin());
   // ======================================================
 
-  router.use("/role/update", await updateTokenRouter());
+  router.use("/role/update", authorizeMember, await updateTokenRouter());
 
   return router;
 };

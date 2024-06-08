@@ -14,7 +14,22 @@ Don't forget to create a .env and add the keys generated from the [Hedera Portal
 # TESTING
 
 for testing purpose you can log into the hedera portal and use the account details provided there
-email(mail generated from tempmail): padivi3729@cnurbano.com
-password:M5V2Z0M3
 
-# DATABASE (Postgresql + Prisma)
+- email(mail generated from tempmail): padivi3729@cnurbano.com
+- password:M5V2Z0M3
+
+### Login
+
+Anyone can login with a username and password (open publically)
+
+```
+Note: All the creation and deletion tasks performed on the token are based on the treasury id, private key and public key in the .env file
+```
+
+### Creating Coin
+
+Only authenticated users are allowed to create a coin
+
+```
+Note: Public key of the treasury is being used as the AdminKey, SupplyKey and the FreezeKey of any new token created
+```

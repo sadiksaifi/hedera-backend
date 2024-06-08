@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { validateRequest } from "zod-express-middleware";
+import { validateRequestBody } from "zod-express-middleware";
 import { createStableCoin } from "@/lib/hedera";
 import { SNewCoin } from "@/schemas/coin/create";
 import { errorHandler } from "@/middlewares/errorHandler";
@@ -9,7 +9,7 @@ export const router: ExpressRouter = async () => {
 
   router.post(
     "/",
-    validateRequest({ body: SNewCoin }),
+    validateRequestBody(SNewCoin),
     errorHandler(async (req, res) => {
       const body = req.body;
       const coin = await createStableCoin(body);

@@ -27,9 +27,8 @@ export const router: ExpressRouter = async () => {
       // Create session if email and password are correct
       const session = await lucia.createSession(user.id, {});
       const cookie = lucia.createSessionCookie(session.id);
-      console.log(cookie);
+      res.appendHeader("Set-Cookie", cookie.serialize());
 
-      res.cookie(cookie.name, cookie.value, cookie.attributes);
       res.status(200).json({ user, session });
     })
   );
