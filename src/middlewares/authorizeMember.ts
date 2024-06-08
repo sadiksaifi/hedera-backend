@@ -3,8 +3,8 @@ import { errorHandler } from "./errorHandler";
 
 export const authorizeMember = errorHandler(
   async (_: Request, res: Response, next: NextFunction) => {
-    const { user, session } = res.locals;
-    if (!user || !session)
+    const { userId, userRole } = res.locals;
+    if (!userId || !userRole)
       throw new Error("Unauthorized Acces denied, login to continue");
 
     next();

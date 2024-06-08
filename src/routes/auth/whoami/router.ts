@@ -6,7 +6,9 @@ export const router: ExpressRouter = async () => {
   router.get(
     "/",
     errorHandler(async (req, res) => {
-      res.status(200).json({ session: res.locals.session });
+      res
+        .status(200)
+        .json({ id: res.locals.userId, role: res.locals.userRole });
     })
   );
 

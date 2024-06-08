@@ -9,7 +9,6 @@ const lucia = new Lucia(prismaAdapter, {
   sessionCookie: {
     attributes: {
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
     },
   },
 });

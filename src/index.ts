@@ -3,8 +3,9 @@ import cors from "cors";
 import { router } from "@/routes/route";
 import { config } from "dotenv";
 import cookieParser from "cookie-parser";
-import { Session, User } from "lucia";
+import { User } from "@prisma/client";
 import { getSession } from "./middlewares/sessionCookieValidator";
+import jwt from "jsonwebtoken";
 
 const app = express();
 config();
@@ -13,9 +14,15 @@ declare global {
   type ExpressRouter = () => Promise<Router>;
   namespace Express {
     interface Locals {
-      user: User | null;
-      session: Session | null;
+      userId: string | null;
+      userRole: User["role"] | null;
     }
+  }
+}
+declare module "jsonwebtoken" {
+  interface JwtPayload extends jwt.JwtPayload {
+    userId: string;
+    role: User["role"];
   }
 }
 

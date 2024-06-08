@@ -5,6 +5,7 @@ import { Router } from "express";
 import { validateRequestBody } from "zod-express-middleware";
 import bcryptjs from "bcryptjs";
 import { errorHandler } from "@/middlewares/errorHandler";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 export const router: ExpressRouter = async () => {
@@ -25,10 +26,12 @@ export const router: ExpressRouter = async () => {
 
       // Create session if email and password are correct
       const session = await lucia.createSession(user.id, {});
-      const cookie = lucia.createSessionCookie(session.id);
-      res.appendHeader("Set-Cookie", cookie.serialize());
+      const payload: JwtPayload = { userId: session.id, role: user.role };
+      const token = jwt.sign(payload, process.env.JWT_SECRET || "jwt_key", {
+        expiresIn: "2w",
+      });
 
-      res.status(200).json({ user, session });
+      res.status(200).json({ token });
     })
   );
 
