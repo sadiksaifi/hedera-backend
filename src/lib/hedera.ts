@@ -312,7 +312,7 @@ const burn = async ({
 }: TCoinBurn) => {
   const signTx = await new TokenBurnTransaction()
     .setTokenId(token)
-    .setAmount(amount)
+    .setAmount(Number(amount))
     .freezeWith(client)
     .sign(PrivateKey.fromStringDer(publicKey.toStringDer()));
 

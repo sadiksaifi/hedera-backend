@@ -1,6 +1,6 @@
 import { SAuthUser } from "@/schemas/auth";
 import { PrismaClient } from "@prisma/client";
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 import { validateRequestBody } from "zod-express-middleware";
 import bcryptjs from "bcryptjs";
 import { errorHandler } from "@/middlewares/errorHandler";
@@ -13,7 +13,7 @@ export const router: ExpressRouter = async () => {
   router.post(
     "/",
     validateRequestBody(SAuthUser),
-    errorHandler(async (req: Request, res: Response) => {
+    errorHandler(async (req, res) => {
       const { email, password } = req.body;
 
       const salt = bcryptjs.genSaltSync(10);

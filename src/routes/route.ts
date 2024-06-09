@@ -15,6 +15,8 @@ import { router as getBalances } from "./coin/get-balances/router";
 import { router as createUser } from "./auth/create-user/router";
 import { router as login } from "./auth/login/router";
 import { router as whoAmI } from "./auth/whoami/router";
+import { router as getAllUsers } from "./users/router";
+import { router as changeUserRole } from "./users/change-role/router";
 import { Router } from "express";
 import { authorizeMaster } from "@/middlewares/authorizeMaster";
 import { authorizeMember } from "@/middlewares/authorizeMember";
@@ -30,6 +32,10 @@ export const router: ExpressRouter = async () => {
   router.use("/auth/create-user", authorizeMaster, await createUser());
   router.use("/auth/login", await login());
   router.use("/auth/whoami", await whoAmI());
+  // =======================================================
+  // ====================== Roles Controller ===============
+  router.use("/users", authorizeMember, await getAllUsers());
+  router.use("/users/change-role", authorizeAdmin, await changeUserRole());
   // =======================================================
 
   // TODO: implement errorHandler function in all the routes

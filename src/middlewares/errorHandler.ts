@@ -14,14 +14,18 @@ import {
 } from "@prisma/client/runtime/library";
 import { NextFunction, Request, Response } from "express";
 
-export const errorHandler = (
+export const errorHandler = <ReqBody, ReqQuery>(
   fn: (
-    req: Request<any>,
+    req: Request<any, any, ReqBody, ReqQuery>,
     res: Response<any>,
     next: NextFunction
   ) => Promise<void>
 ) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (
+    req: Request<any, any, ReqBody, ReqQuery>,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       await fn(req, res, next);
     } catch (error) {
