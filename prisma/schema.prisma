@@ -9,8 +9,14 @@ datasource db {
 
 model User {
   id              String         @id @default(cuid())
+  name            String
   email           String         @unique
-  password        String
+  password        String?
+
+  hederaAccId     String
+  hederaPubKey    String
+
+  status          Status
   role            Role           @default(MEMBER)
   sessions        Session[]
 }
@@ -28,4 +34,9 @@ enum Role {
   MEMBER
   MASTER
   ADMIN
+}
+enum Status {
+  PENDING
+  ACTIVE
+  DISABLED
 }

@@ -1,5 +1,3 @@
-import { router as helloRouter } from "./hello/router";
-import { router as fooRouter } from "./foo/router";
 import { router as createCoin } from "./coin/create/router";
 import { router as deleteCoin } from "./coin/delete/router";
 import { router as cashInCoin } from "./coin/cashin/router";
@@ -13,7 +11,9 @@ import { router as updateTokenRouter } from "./role/update/router";
 import { router as burnCoin } from "./coin/burn/router";
 import { router as getBalances } from "./coin/get-balances/router";
 import { router as createUser } from "./auth/create-user/router";
+import { router as deleteUser } from "./auth/delete-user/router";
 import { router as login } from "./auth/login/router";
+import { router as setPassword } from "./auth/set-password/router";
 import { router as whoAmI } from "./auth/whoami/router";
 import { router as getAllUsers } from "./users/router";
 import { router as changeUserRole } from "./users/change-role/router";
@@ -25,11 +25,10 @@ import { authorizeAdmin } from "@/middlewares/authorizeAdmin";
 export const router: ExpressRouter = async () => {
   const router = Router();
 
-  router.use("/foo", await fooRouter());
-  router.use("/hello", await helloRouter());
-
   // ====================== Auth Routes ====================
   router.use("/auth/create-user", authorizeMaster, await createUser());
+  router.use("/auth/delete-user", authorizeMaster, await deleteUser());
+  router.use("/auth/set-password", await setPassword());
   router.use("/auth/login", await login());
   router.use("/auth/whoami", await whoAmI());
   // =======================================================

@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import { User } from "@prisma/client";
 import { getSession } from "./middlewares/sessionCookieValidator";
 import jwt from "jsonwebtoken";
+// import { createFirstAccount } from "./test/createFirstMaster";
 
 const app = express();
 config();
@@ -36,6 +37,8 @@ declare module "jsonwebtoken" {
       origin: "*",
     })
   );
+
+  // createFirstAccount();
 
   app.use("/api", await router());
 

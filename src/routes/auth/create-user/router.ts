@@ -1,9 +1,10 @@
-import { SAuthUser } from "@/schemas/auth";
 import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
 import { validateRequestBody } from "zod-express-middleware";
-import bcryptjs from "bcryptjs";
 import { errorHandler } from "@/middlewares/errorHandler";
+import { SNewUser } from "@/schemas/newUser";
+import { sendMail } from "@/lib/sendMail";
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 
@@ -12,18 +13,29 @@ export const router: ExpressRouter = async () => {
 
   router.post(
     "/",
-    validateRequestBody(SAuthUser),
+    validateRequestBody(SNewUser),
     errorHandler(async (req, res) => {
-      const { email, password } = req.body;
-
-      const salt = bcryptjs.genSaltSync(10);
-      const passwordHash = bcryptjs.hashSync(password, salt);
-
+      const { name, email, hederaAccId, hederaPubKey } = req.body;
       const user = await prisma.user.create({
-        data: { email, password: passwordHash, role: "MEMBER" },
+        data: {
+          name,
+          hederaAccId,
+          hederaPubKey,
+          email,
+          role: "MEMBER",
+          status: "PENDING",
+        },
       });
 
-      res.status(200).json({ ...user });
+      const payload = { userId: user.id };
+      const token = jwt.sign(payload, process.env.JWT_SECRET || "jwt_key", {
+        expiresIn: "1w",
+      });
+
+      const emailTemplate = `<strong>Visit the following link to verify your account creation</strong><p>${process.env.FRONTEND_DOMAIN}/auth/set-password?token=${token}</p><p>This link is valid for 7 days only</p>`;
+      const mail = await sendMail(email, emailTemplate);
+
+      res.status(200).json({ user, email: mail });
     })
   );
 

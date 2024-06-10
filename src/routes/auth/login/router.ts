@@ -26,7 +26,7 @@ export const router: ExpressRouter = async () => {
 
       // Create session if email and password are correct
       const session = await lucia.createSession(user.id, {});
-      const payload: JwtPayload = { userId: session.id, role: user.role };
+      const payload: JwtPayload = { userId: session.userId, role: user.role };
       const token = jwt.sign(payload, process.env.JWT_SECRET || "jwt_key", {
         expiresIn: "2w",
       });
