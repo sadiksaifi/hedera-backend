@@ -14,15 +14,15 @@ export const router: ExpressRouter = async () => {
     "/",
     validateRequestBody(SNewUserPassword),
     errorHandler(async (req, res) => {
-      const userId = res.locals.userId; // this is being set by the middleware
-      if (!userId) throw new Error("Invalid Token");
+      const email = res.locals.email; // this is being set by the middleware
+      if (!email) throw new Error("Invalid Token");
 
       const { password } = req.body;
       const salt = bcryptjs.genSaltSync(10);
       const passwordHash = bcryptjs.hashSync(password, salt);
 
       const user = await prisma.user.update({
-        where: { id: userId },
+        where: { email },
         data: { status: "ACTIVE", password: passwordHash },
       });
 

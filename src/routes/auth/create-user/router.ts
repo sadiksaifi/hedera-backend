@@ -16,6 +16,20 @@ export const router: ExpressRouter = async () => {
     validateRequestBody(SNewUser),
     errorHandler(async (req, res) => {
       const { name, email, hederaAccId, hederaPubKey } = req.body;
+
+      const payload = { email };
+      const token = jwt.sign(payload, process.env.JWT_SECRET || "jwt_key", {
+        expiresIn: "1w",
+      });
+
+      const http = process.env.NODE_ENV === "production" ? "https" : "http";
+      const emailTemplate = `
+<strong>Visit the following link to verify your account creation</strong>
+<p><a href="${http}://${process.env.FRONTEND_DOMAIN}/auth/set-password?token=${token}">Click Here</a></p>
+<p>This link is valid for 7 days only</p>
+`;
+      const mail = await sendMail(email, emailTemplate);
+
       const user = await prisma.user.create({
         data: {
           name,
@@ -26,14 +40,6 @@ export const router: ExpressRouter = async () => {
           status: "PENDING",
         },
       });
-
-      const payload = { userId: user.id };
-      const token = jwt.sign(payload, process.env.JWT_SECRET || "jwt_key", {
-        expiresIn: "1w",
-      });
-
-      const emailTemplate = `<strong>Visit the following link to verify your account creation</strong><p>${process.env.FRONTEND_DOMAIN}/auth/set-password?token=${token}</p><p>This link is valid for 7 days only</p>`;
-      const mail = await sendMail(email, emailTemplate);
 
       res.status(200).json({ user, email: mail });
     })

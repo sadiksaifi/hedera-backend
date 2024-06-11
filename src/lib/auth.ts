@@ -1,5 +1,5 @@
 import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
 import { Lucia, TimeSpan } from "lucia";
 
 const client = new PrismaClient();
@@ -11,13 +11,25 @@ const lucia = new Lucia(prismaAdapter, {
       secure: process.env.NODE_ENV === "production",
     },
   },
+  getUserAttributes: (attributes) => {
+    return {
+      role: attributes.role,
+      email: attributes.email,
+    };
+  },
 });
 
 // IMPORTANT!
 declare module "lucia" {
   interface Register {
     Lucia: typeof lucia;
+    DatabaseUserAttributes: DatabaseUserAttributes;
   }
+}
+
+interface DatabaseUserAttributes {
+  role: User["role"];
+  email: string;
 }
 
 export { lucia, client as prismaClient };

@@ -6,6 +6,7 @@ import { router as transferCoin } from "./coin/transfer/router";
 import { router as freezeCoin } from "./coin/freeze/router";
 import { router as unfreezeCoin } from "./coin/unfreeze/router";
 import { router as pauseCoin } from "./coin/pause/router";
+import { router as wipeCoin } from "./coin/wipe/router";
 import { router as unpauseCoin } from "./coin/unpause/router";
 import { router as treasury } from "./treasury/router";
 import { router as getInfo } from "./coin/get-info/router";
@@ -17,6 +18,7 @@ import { router as deleteUser } from "./auth/delete-user/router";
 import { router as login } from "./auth/login/router";
 import { router as setPassword } from "./auth/set-password/router";
 import { router as whoAmI } from "./auth/whoami/router";
+import { router as logOut } from "./auth/logout/router";
 import { router as getAllUsers } from "./users/router";
 import { router as changeUserRole } from "./users/change-role/router";
 import { Router } from "express";
@@ -32,7 +34,8 @@ export const router: ExpressRouter = async () => {
   router.use("/auth/delete-user", authorizeMaster, await deleteUser());
   router.use("/auth/set-password", await setPassword());
   router.use("/auth/login", await login());
-  router.use("/auth/whoami", await whoAmI());
+  router.use("/auth/whoami", authorizeMember, await whoAmI());
+  router.use("/auth/logout", authorizeMember, await logOut());
   // =======================================================
   // ====================== Roles Controller ===============
   router.use("/users", authorizeMember, await getAllUsers());
@@ -42,6 +45,7 @@ export const router: ExpressRouter = async () => {
   // TODO: implement errorHandler function in all the routes
   // ====================== Coin routes ======================
   router.use("/coin/create", authorizeAdmin, await createCoin());
+  router.use("/coin/wipe", authorizeAdmin, await wipeCoin());
   router.use("/coin/cashin", authorizeMember, await cashInCoin());
   router.use("/coin/get-info", authorizeMember, await getInfo());
   router.use("/coin/burn", authorizeMember, await burnCoin());

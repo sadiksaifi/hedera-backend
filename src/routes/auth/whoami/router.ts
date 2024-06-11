@@ -6,17 +6,13 @@ export const router: ExpressRouter = async () => {
   const router = Router();
   router.get(
     "/",
-    errorHandler(async (req, res) => {
-      if (res.locals.userId && res.locals.userRole) {
-        const user = await prismaClient.user.findFirst({
-          where: { id: res.locals.userId },
-        });
-        res.status(200).json({ ...user });
-        return;
-      }
-      res
-        .status(200)
-        .json({ id: res.locals.userId, role: res.locals.userRole });
+    errorHandler(async (_, res) => {
+      if (!res.locals.userId || !res.locals.userRole)
+        throw new Error("Not Logged In");
+      const user = await prismaClient.user.findFirst({
+        where: { id: res.locals.userId },
+      });
+      res.status(200).json({ ...user, password: undefined });
     })
   );
 

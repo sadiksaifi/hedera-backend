@@ -35,6 +35,7 @@ import {
 import { TCoinBurn } from "@/schemas/coin/burn";
 import { TCoinInfo } from "@/schemas/coin/getInfo";
 import { TPauseToken } from "@/schemas/coin/pause";
+import { TWipe } from "@/schemas/coin/wipe";
 
 SDK.log = {
   level: process.env.REACT_APP_LOG_LEVEL ?? "ERROR",
@@ -91,6 +92,7 @@ const createStableCoin = async ({
     .setSupplyKey(publicKey)
     .setFreezeKey(publicKey)
     .setPauseKey(publicKey)
+    .setWipeKey(publicKey)
     .freezeWith(client)
     .sign(pK);
 
@@ -268,41 +270,24 @@ const unfreezeStableCoin = async ({ addressId, tokenId }: TUnfreeze) => {
   return receipt;
 };
 
-const wipe = async ({
-  privateKey,
-  token,
-  amount,
-  accountId,
-}: {
-  privateKey: string;
-  token: string;
-  amount: number;
-  accountId: string;
-}) => {
-  try {
-    const tx = await new TokenWipeTransaction()
-      .setAccountId(accountId)
-      .setTokenId(token)
-      .setAmount(amount)
-      .freezeWith(client)
-      .sign(PrivateKey.fromStringDer(privateKey));
+const wipe = async ({ token, amount, accountId }: TWipe) => {
+  const tx = await new TokenWipeTransaction()
+    .setAccountId(accountId)
+    .setTokenId(token)
+    .setAmount(amount)
+    .freezeWith(client)
+    .sign(PrivateKey.fromStringDer(publicKey.toStringDer()));
 
-    const signTx = await tx.sign(pK /* wipeKey */);
-    const txResponse = await signTx.execute(client);
+  const signTx = await tx.sign(pK /* wipeKey */);
+  const txResponse = await signTx.execute(client);
 
-    //Request the receipt of the transaction
-    const receipt = await txResponse.getReceipt(client);
+  //Request the receipt of the transaction
+  const receipt = await txResponse.getReceipt(client);
 
-    //Obtain the transaction consensus status
-    const transactionStatus = receipt.status;
+  //Obtain the transaction consensus status
+  const transactionStatus = receipt.status;
 
-    return transactionStatus;
-  } catch (err) {
-    console.dir(err, { depth: null });
-    if (err instanceof Error) console.log(err.message);
-
-    throw new Error("failed to wipe amount");
-  }
+  return transactionStatus;
 };
 
 const burn = async ({
@@ -347,27 +332,21 @@ const pause = async ({ tokenId }: TPauseToken) => {
 };
 
 const unpause = async ({ tokenId }: TPauseToken) => {
-  try {
-    const signTx = await new TokenUnpauseTransaction()
-      .setTokenId(tokenId)
-      .freezeWith(client)
-      .sign(PrivateKey.fromStringDer(publicKey.toStringDer()));
+  const signTx = await new TokenUnpauseTransaction()
+    .setTokenId(tokenId)
+    .freezeWith(client)
+    .sign(PrivateKey.fromStringDer(publicKey.toStringDer()));
 
-    //Submit the transaction to a Hedera network
-    const txResponse = await signTx.execute(client);
+  //Submit the transaction to a Hedera network
+  const txResponse = await signTx.execute(client);
 
-    //Request the receipt of the transaction
-    const receipt = await txResponse.getReceipt(client);
+  //Request the receipt of the transaction
+  const receipt = await txResponse.getReceipt(client);
 
-    //Get the transaction consensus status
-    const transactionStatus = receipt.status;
+  //Get the transaction consensus status
+  const transactionStatus = receipt.status;
 
-    return transactionStatus;
-  } catch (err) {
-    console.dir(err, { depth: null });
-    if (err instanceof Error) console.log(err.message);
-    throw new Error("failed to unpause the token");
-  }
+  return transactionStatus;
 };
 
 const deleteStableCoin = async ({ tokenId }: TDeleteCoin) => {

@@ -5,7 +5,7 @@ import { config } from "dotenv";
 import cookieParser from "cookie-parser";
 import { User } from "@prisma/client";
 import { getSession } from "./middlewares/sessionCookieValidator";
-import jwt from "jsonwebtoken";
+import { Session, User as LuciaUser } from "lucia";
 // import { createFirstAccount } from "./test/createFirstMaster";
 
 const app = express();
@@ -17,11 +17,16 @@ declare global {
     interface Locals {
       userId: string | null;
       userRole: User["role"] | null;
+      email: User["email"] | null;
+
+      user: LuciaUser | null;
+      session: Session | null;
     }
   }
 }
 declare module "jsonwebtoken" {
-  interface JwtPayload extends jwt.JwtPayload {
+  interface JwtPayload {
+    email?: User["email"] | null;
     userId: string;
     role: User["role"];
   }
