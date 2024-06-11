@@ -19,10 +19,13 @@ export const router: ExpressRouter = async () => {
       const user = await prisma.user.findFirst({ where: { email: email } });
 
       // Check User and password
-      if (!user)
+      if (!user || !user.password)
         throw new Error("Sorry you are not authorized to use the system");
       const isPasswordCorrect = bcryptjs.compareSync(password, user.password);
-      if (!isPasswordCorrect) throw new Error("Incorrect Password");
+      if (!isPasswordCorrect)
+        throw new Error(
+          "Incorrect Credentials, recheck your email and password"
+        );
 
       // Create session if email and password are correct
       const session = await lucia.createSession(user.id, {});

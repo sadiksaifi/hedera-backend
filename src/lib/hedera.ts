@@ -34,6 +34,7 @@ import {
 } from "@hashgraph/stablecoin-npm-sdk";
 import { TCoinBurn } from "@/schemas/coin/burn";
 import { TCoinInfo } from "@/schemas/coin/getInfo";
+import { TPauseToken } from "@/schemas/coin/pause";
 
 SDK.log = {
   level: process.env.REACT_APP_LOG_LEVEL ?? "ERROR",
@@ -89,6 +90,7 @@ const createStableCoin = async ({
     .setAdminKey(publicKey)
     .setSupplyKey(publicKey)
     .setFreezeKey(publicKey)
+    .setPauseKey(publicKey)
     .freezeWith(client)
     .sign(pK);
 
@@ -150,8 +152,6 @@ const grantKyc = async ({
 };
 
 const associate = async ({ account, tokenId }: TAssociateCoin) => {
-  const accountPrivateKey = PrivateKey.fromStringECDSA(account.key);
-  // TOKEN ASSOCIATION WITH ACCOUNT
   let associateTx = await new TokenAssociateTransaction()
     .setAccountId(account.id)
     .setTokenIds([tokenId])
@@ -328,46 +328,30 @@ const burn = async ({
   //v2.0.7
 };
 
-const pause = async ({
-  pauseKey,
-  token,
-}: {
-  pauseKey: string;
-  token: string;
-}) => {
-  try {
-    const signTx = await new TokenPauseTransaction()
-      .setTokenId(token)
-      .freezeWith(client)
-      .sign(PrivateKey.fromStringDer(pauseKey));
+const pause = async ({ tokenId }: TPauseToken) => {
+  const signTx = await new TokenPauseTransaction()
+    .setTokenId(tokenId)
+    .freezeWith(client)
+    .sign(PrivateKey.fromStringDer(publicKey.toStringDer()));
 
-    //Submit the transaction to a Hedera network
-    const txResponse = await signTx.execute(client);
+  //Submit the transaction to a Hedera network
+  const txResponse = await signTx.execute(client);
 
-    //Request the receipt of the transaction
-    const receipt = await txResponse.getReceipt(client);
+  //Request the receipt of the transaction
+  const receipt = await txResponse.getReceipt(client);
 
-    //Get the transaction consensus status
-    const transactionStatus = receipt.status;
+  //Get the transaction consensus status
+  const transactionStatus = receipt.status;
 
-    return transactionStatus;
-  } catch (err) {
-    console.dir(err, { depth: null });
-  }
+  return transactionStatus;
 };
 
-const unpause = async ({
-  pauseKey,
-  token,
-}: {
-  pauseKey: string;
-  token: string;
-}) => {
+const unpause = async ({ tokenId }: TPauseToken) => {
   try {
     const signTx = await new TokenUnpauseTransaction()
-      .setTokenId(token)
+      .setTokenId(tokenId)
       .freezeWith(client)
-      .sign(PrivateKey.fromStringDer(pauseKey) /* pauseKey */);
+      .sign(PrivateKey.fromStringDer(publicKey.toStringDer()));
 
     //Submit the transaction to a Hedera network
     const txResponse = await signTx.execute(client);

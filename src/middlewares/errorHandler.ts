@@ -46,9 +46,15 @@ export const errorHandler = <ReqBody, ReqQuery>(
         error instanceof BadKeyError ||
         error instanceof BadMnemonicError ||
         error instanceof PrecheckStatusError
-      )
-        res.status(400).json({ message: error.message, name: error.name });
-      else if (error instanceof Error)
+      ) {
+        const messages = error.message.split(" ");
+        res.status(400).json({
+          message: `An error has occurred: ${messages[messages.length - 1]
+            .split("_")
+            .join(" ")}`,
+          name: error.name,
+        });
+      } else if (error instanceof Error)
         res.status(400).json({ message: error.message });
       else
         res.status(500).json({

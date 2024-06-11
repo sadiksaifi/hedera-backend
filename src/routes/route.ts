@@ -5,6 +5,8 @@ import { router as associateCoin } from "./coin/associate/router";
 import { router as transferCoin } from "./coin/transfer/router";
 import { router as freezeCoin } from "./coin/freeze/router";
 import { router as unfreezeCoin } from "./coin/unfreeze/router";
+import { router as pauseCoin } from "./coin/pause/router";
+import { router as unpauseCoin } from "./coin/unpause/router";
 import { router as treasury } from "./treasury/router";
 import { router as getInfo } from "./coin/get-info/router";
 import { router as updateTokenRouter } from "./role/update/router";
@@ -39,11 +41,13 @@ export const router: ExpressRouter = async () => {
 
   // TODO: implement errorHandler function in all the routes
   // ====================== Coin routes ======================
-  router.use("/coin/create", authorizeMember, await createCoin());
+  router.use("/coin/create", authorizeAdmin, await createCoin());
   router.use("/coin/cashin", authorizeMember, await cashInCoin());
   router.use("/coin/get-info", authorizeMember, await getInfo());
   router.use("/coin/burn", authorizeMember, await burnCoin());
   router.use("/coin/get-balances", authorizeMember, await getBalances());
+  router.use("/coin/pause", authorizeMember, await pauseCoin());
+  router.use("/coin/unpause", authorizeMember, await unpauseCoin());
   router.use("/treasury", authorizeMember, await treasury());
   // =======================================================
 

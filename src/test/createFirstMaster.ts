@@ -9,8 +9,8 @@ export const createFirstAccount = async () => {
     const user = await prisma.user.create({
       data: {
         name: "First-Master",
-        hederaAccId: "Hedera Account",
-        hederaPubKey: "Hedera Public Key",
+        hederaAccId: process.env.TREASURY_ID!,
+        hederaPubKey: process.env.TREASURY_PUB_KEY!,
         email: "master@gmail.com",
         role: "MASTER",
         status: "ACTIVE",
