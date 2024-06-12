@@ -13,9 +13,9 @@ export const router: ExpressRouter = async () => {
     validateRequest({ body: SChangeRole }),
     errorHandler(async (req, res) => {
       const { id, role } = req.body;
-      if (res.locals.userRole === "MEMBER")
+      if (res.locals.user?.role === "MEMBER")
         throw new Error("Member can't elevate previlages");
-      if (res.locals.userRole === "ADMIN" && role === "MASTER")
+      if (res.locals.user?.role === "ADMIN" && role === "MASTER")
         throw new Error("Admin Can't elevate previlage above Admin");
 
       const newRole = await prisma.user.update({

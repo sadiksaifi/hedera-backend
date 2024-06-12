@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 import { User } from "@prisma/client";
 import { getSession } from "./middlewares/sessionCookieValidator";
 import { Session, User as LuciaUser } from "lucia";
+import { authorize } from "./middlewares/authorization";
+import { logger } from "./middlewares/logger";
 // import { createFirstAccount } from "./test/createFirstMaster";
 
 const app = express();
@@ -35,8 +37,6 @@ declare module "jsonwebtoken" {
 (async function main() {
   app.use(cookieParser());
   app.use(express.json());
-  app.use(getSession);
-
   app.use(
     cors({
       origin: "*",
@@ -45,6 +45,9 @@ declare module "jsonwebtoken" {
 
   // createFirstAccount();
 
+  app.use(logger);
+  app.use(getSession);
+  app.use(authorize);
   app.use("/api", await router());
 
   const PORT = process.env.PORT || 4000;

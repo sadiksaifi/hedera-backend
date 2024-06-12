@@ -4,6 +4,7 @@ import { validateRequestBody } from "zod-express-middleware";
 import bcryptjs from "bcryptjs";
 import { errorHandler } from "@/middlewares/errorHandler";
 import { SNewUserPassword } from "@/schemas/setPassword";
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 
@@ -14,7 +15,17 @@ export const router: ExpressRouter = async () => {
     "/",
     validateRequestBody(SNewUserPassword),
     errorHandler(async (req, res) => {
-      const email = res.locals.email; // this is being set by the middleware
+      const token = req.headers.authorization;
+      if (!token) throw new Error("Token Not Received");
+
+      const payload = jwt.verify(
+        token.split(" ")[1],
+        process.env.JWT_SECRET ?? "jwt_key"
+      );
+      if (typeof payload === "string")
+        throw new Error("Payload in string received");
+
+      const { email } = payload; // this is being set by the middleware
       if (!email) throw new Error("Invalid Token");
 
       const { password } = req.body;
