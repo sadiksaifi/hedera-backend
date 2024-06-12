@@ -9,6 +9,7 @@ import {
   BadMnemonicError,
   PrecheckStatusError,
 } from "@hashgraph/sdk";
+import { errorHandler } from "@/middlewares/errorHandler";
 
 export const router: ExpressRouter = async () => {
   const router = Router();
@@ -16,43 +17,28 @@ export const router: ExpressRouter = async () => {
   router.get(
     "/",
     validateRequest({ query: STreasuryData }),
-    async (req, res) => {
-      try {
-        const query = req.query;
-        const tokenList = await getTreasury(query);
+    errorHandler(async (req, res) => {
+      const query = req.query;
+      const tokenList: { token_id: string; balance: string }[] =
+        await getTreasury(query);
 
-        const data = await Promise.all(
-          tokenList.map(async (token) => {
-            const { tokenId, ...tokenInfo } = await getCoinInfo({
-              tokenId: token.token_id,
-            });
-            return {
-              tokenId: tokenId.toString(),
-              myBalance: token.balance,
-              name: tokenInfo.name,
-              symbol: tokenInfo.symbol,
-              isDeleted: tokenInfo.isDeleted,
-            };
-          })
-        );
+      const data = await Promise.all(
+        tokenList.map(async (token) => {
+          const { tokenId, ...tokenInfo } = await getCoinInfo({
+            tokenId: token.token_id,
+          });
+          return {
+            tokenId: tokenId.toString(),
+            myBalance: token.balance,
+            name: tokenInfo.name,
+            symbol: tokenInfo.symbol,
+            isDeleted: tokenInfo.isDeleted,
+          };
+        })
+      );
 
-        res.status(200).json({ data });
-      } catch (error) {
-        console.log(error);
-        if (
-          error instanceof StatusError ||
-          error instanceof ReceiptStatusError ||
-          error instanceof BadKeyError ||
-          error instanceof BadMnemonicError ||
-          error instanceof PrecheckStatusError
-        )
-          return res
-            .status(400)
-            .json({ message: error.message, name: error.name });
-
-        return res.status(500).json({ message: "Something went wrong" });
-      }
-    }
+      res.status(200).json({ data });
+    })
   );
 
   return router;

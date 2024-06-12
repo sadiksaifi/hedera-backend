@@ -9,12 +9,15 @@ import {
   BadMnemonicError,
   PrecheckStatusError,
 } from "@hashgraph/sdk";
+import { errorHandler } from "@/middlewares/errorHandler";
 
 export const router: ExpressRouter = async () => {
   const router = Router();
 
-  router.get("/", validateRequest({ query: SCoinInfo }), async (req, res) => {
-    try {
+  router.get(
+    "/",
+    validateRequest({ query: SCoinInfo }),
+    errorHandler(async (req, res) => {
       const { tokenId, ...token } = await getCoinInfo(req.query);
       res.status(200).json({
         data: {
@@ -24,22 +27,8 @@ export const router: ExpressRouter = async () => {
           tokenId: tokenId.toString(),
         },
       });
-    } catch (error) {
-      console.log(error);
-      if (
-        error instanceof StatusError ||
-        error instanceof ReceiptStatusError ||
-        error instanceof BadKeyError ||
-        error instanceof BadMnemonicError ||
-        error instanceof PrecheckStatusError
-      )
-        return res
-          .status(400)
-          .json({ message: error.message, name: error.name });
-
-      return res.status(500).json({ message: "Something went wrong" });
-    }
-  });
+    })
+  );
 
   return router;
 };

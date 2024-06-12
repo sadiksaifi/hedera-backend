@@ -14,7 +14,6 @@ export const router: ExpressRouter = async () => {
     validateRequestQuery(SDeleteUser),
     errorHandler(async (req, res) => {
       const { id } = req.query;
-      console.log(req.query);
 
       const deletedUser = await prisma.user.delete({ where: { id } });
 

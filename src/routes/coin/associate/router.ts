@@ -12,7 +12,6 @@ export const router: ExpressRouter = async () => {
     validateRequest({ body: SAssociateCoin }),
     errorHandler(async (req, res) => {
       const body = req.body;
-      console.log(body);
       const associateRx = await associate(body);
       res.status(200).json({ data: { ...associateRx, status: 200 } });
     })

@@ -19,6 +19,7 @@ model User {
   status          Status
   role            Role           @default(MEMBER)
   sessions        Session[]
+  permissions     Permission[]
 }
 
 model Session {
@@ -26,6 +27,16 @@ model Session {
   userId          String
   expiresAt       DateTime
   user            User           @relation(references: [id], fields: [userId], onDelete: Cascade)
+}
+
+model Permission {
+  id              String         @id @default(cuid())
+  grant           String         
+
+  userId          String
+  user            User           @relation(references: [id], fields: [userId], onDelete: Cascade)
+
+  @@unique([userId, grant])
 }
 
 

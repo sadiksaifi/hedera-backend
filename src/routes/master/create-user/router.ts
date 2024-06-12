@@ -40,8 +40,15 @@ export const router: ExpressRouter = async () => {
           status: "PENDING",
         },
       });
+      const grants = [
+        { userId: user.id, grant: "transfer" },
+        { userId: user.id, grant: "associate" },
+      ];
+      const permissions = await prisma.permission.createManyAndReturn({
+        data: grants,
+      });
 
-      res.status(200).json({ user, email: mail });
+      res.status(200).json({ user, permissions, email: mail });
     })
   );
 

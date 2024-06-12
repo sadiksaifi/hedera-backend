@@ -10,7 +10,9 @@ export const router: ExpressRouter = async () => {
   router.get(
     "/",
     errorHandler(async (_, res) => {
-      const users = await prisma.user.findMany();
+      const users = await prisma.user.findMany({
+        include: { permissions: true },
+      });
       res.status(200).json(users);
     })
   );

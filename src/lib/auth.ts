@@ -1,5 +1,5 @@
 import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
-import { PrismaClient, User } from "@prisma/client";
+import { Permission, PrismaClient, User } from "@prisma/client";
 import { Lucia, TimeSpan } from "lucia";
 
 const client = new PrismaClient();
