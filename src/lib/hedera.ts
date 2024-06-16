@@ -1,4 +1,3 @@
-import { TTreasuryData } from "@/schemas/coin";
 import { TUnfreeze } from "@/schemas/coin/unfreeze";
 import { TFreeze } from "@/schemas/coin/freeze";
 import { TNewCoin } from "@/schemas/coin/create";
@@ -195,7 +194,7 @@ const getCoinInfo = async ({ tokenId }: TCoinInfo) => {
  *
  * get balance of `$accountId` for BaldevCoin only
  */
-const getTreasury = async ({ accountId }: TTreasuryData) => {
+const getTreasury = async ({ accountId }: { accountId: string }) => {
   const res = await fetch(
     `https://testnet.mirrornode.hedera.com/api/v1/balances?account.id=${accountId}`,
     {

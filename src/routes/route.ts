@@ -22,6 +22,7 @@ import { router as setPassword } from "./auth/set-password/router";
 import { router as whoAmI } from "./whoami/router";
 import { router as logOut } from "./logout/router";
 import { router as getAllUsers } from "./users/router";
+import { router as updateHederaAccount } from "./users/update-hedera-account/router";
 import { router as changeUserRole } from "./users/change-role/router";
 import { Router } from "express";
 
@@ -43,6 +44,7 @@ export const router: ExpressRouter = async () => {
 
   // ====================== Roles Controller ===============
   router.use("/users", await getAllUsers());
+  router.use("/users/update-hedera-account", await updateHederaAccount());
   router.use("/users/change-role", await changeUserRole());
   // =======================================================
 

@@ -1,14 +1,5 @@
 import { Router } from "express";
-import { validateRequest } from "zod-express-middleware";
-import { STreasuryData } from "@/schemas/coin";
 import { getCoinInfo, getTreasury } from "@/lib/hedera";
-import {
-  StatusError,
-  ReceiptStatusError,
-  BadKeyError,
-  BadMnemonicError,
-  PrecheckStatusError,
-} from "@hashgraph/sdk";
 import { errorHandler } from "@/middlewares/errorHandler";
 
 export const router: ExpressRouter = async () => {
@@ -16,11 +7,11 @@ export const router: ExpressRouter = async () => {
 
   router.get(
     "/",
-    validateRequest({ query: STreasuryData }),
-    errorHandler(async (req, res) => {
-      const query = req.query;
+    errorHandler(async (_, res) => {
+      if (!res.locals.user) throw new Error("You are not authorized");
+
       const tokenList: { token_id: string; balance: string }[] =
-        await getTreasury(query);
+        await getTreasury({ accountId: res.locals.user.hederaAcId });
 
       const data = await Promise.all(
         tokenList.map(async (token) => {
