@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import bcryptjs from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -18,5 +19,8 @@ export const createFirstAccount = async () => {
       },
     });
     console.log("Created a test user: ", user);
-  } catch (error) {}
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError)
+      console.log("Master Already Created");
+  }
 };

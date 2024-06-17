@@ -36,7 +36,7 @@ declare module "jsonwebtoken" {
 }
 
 (async function main() {
-  // createFirstAccount();
+  createFirstAccount();
 
   app.use(cookieParser());
   app.use(express.json());

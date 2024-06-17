@@ -27,6 +27,7 @@ export const router: ExpressRouter = async () => {
           expiresIn: "1w",
         }),
         protocol: process.env.NODE_ENV === "production" ? "https" : "http",
+        frontend: process.env.FRONTEND_DOMAIN!,
       };
 
       const path = `${cwd()}/src/lib/templates/createUser.html`;
