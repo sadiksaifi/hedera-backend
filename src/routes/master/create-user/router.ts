@@ -5,6 +5,8 @@ import { errorHandler } from "@/middlewares/errorHandler";
 import { SNewUser } from "@/schemas/newUser";
 import { sendMail } from "@/lib/sendMail";
 import jwt from "jsonwebtoken";
+import fs from "fs";
+import { cwd } from "process";
 
 const prisma = new PrismaClient();
 
@@ -18,16 +20,22 @@ export const router: ExpressRouter = async () => {
       const { name, email, hederaAccId, hederaPubKey } = req.body;
 
       const payload = { email };
-      const token = jwt.sign(payload, process.env.JWT_SECRET || "jwt_key", {
-        expiresIn: "1w",
-      });
 
-      const http = process.env.NODE_ENV === "production" ? "https" : "http";
-      const emailTemplate = `
-<strong>Visit the following link to verify your account creation</strong>
-<p><a href="${http}://${process.env.FRONTEND_DOMAIN}/auth/set-password?token=${token}">Click Here</a></p>
-<p>This link is valid for 7 days only</p>
-`;
+      // Stores the variables for the email template
+      const variables = {
+        token: jwt.sign(payload, process.env.JWT_SECRET || "jwt_key", {
+          expiresIn: "1w",
+        }),
+        protocol: process.env.NODE_ENV === "production" ? "https" : "http",
+      };
+
+      const path = `${cwd()}/src/lib/templates/createUser.html`;
+      let emailTemplate = fs.readFileSync(path, "utf8");
+      let key: keyof typeof variables;
+      for (key in variables) {
+        emailTemplate = emailTemplate.replace(`{{${key}}}`, variables[key]);
+      }
+
       const mail = await sendMail(email, emailTemplate);
 
       const user = await prisma.user.create({

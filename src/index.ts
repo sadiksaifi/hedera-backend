@@ -8,6 +8,7 @@ import { getSession } from "./middlewares/sessionCookieValidator";
 import { Session, User as LuciaUser } from "lucia";
 import { authorize } from "./middlewares/authorization";
 import { logger } from "./middlewares/logger";
+import { createFirstAccount } from "./test/createFirstMaster";
 // import { createFirstAccount } from "./test/createFirstMaster";
 
 const app = express();
@@ -35,6 +36,8 @@ declare module "jsonwebtoken" {
 }
 
 (async function main() {
+  // createFirstAccount();
+
   app.use(cookieParser());
   app.use(express.json());
   app.use(
@@ -42,8 +45,6 @@ declare module "jsonwebtoken" {
       origin: "*",
     })
   );
-
-  // createFirstAccount();
 
   app.use(logger);
   app.use(getSession);
