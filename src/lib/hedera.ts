@@ -165,12 +165,18 @@ const associate = async ({ account, tokenId }: TAssociateCoin) => {
   return associateRx;
 };
 
-const transferCoin = async ({ id, from, to, amount }: TTransfer) => {
+const transferCoin = async ({
+  id,
+  from,
+  to,
+  amount,
+  privateKey,
+}: TTransfer & { from: string }) => {
   const tokenTransferTx = await new TransferTransaction()
     .addTokenTransfer(id, from, -1 * amount)
     .addTokenTransfer(id, to, amount)
     .freezeWith(client)
-    .sign(pK);
+    .sign(PrivateKey.fromStringECDSA(privateKey));
 
   const tokenTransferSubmit = await tokenTransferTx.execute(client);
 
