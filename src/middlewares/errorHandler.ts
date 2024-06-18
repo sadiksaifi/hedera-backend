@@ -29,6 +29,7 @@ export const errorHandler = <ReqBody, ReqQuery>(
     try {
       await fn(req, res, next);
     } catch (error) {
+      if (process.env.NODE_ENV !== "production") console.log(error);
       if (
         error instanceof PrismaClientValidationError ||
         error instanceof PrismaClientInitializationError ||

@@ -22,5 +22,6 @@ export const createFirstAccount = async () => {
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError)
       console.log("Master Already Created");
+    else console.log(error);
   }
 };

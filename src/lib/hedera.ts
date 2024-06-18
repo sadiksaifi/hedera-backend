@@ -22,6 +22,7 @@ import {
   TokenBurnTransaction,
   TokenPauseTransaction,
   TokenUnpauseTransaction,
+  TokenSupplyType,
 } from "@hashgraph/sdk";
 import {
   KYCRequest,
@@ -79,21 +80,30 @@ const createStableCoin = async ({
   symbol,
   initialSupply,
   maxTxFee,
+  decimals,
+  supply,
 }: TNewCoin) => {
   // Create the transaction and freeze for manual signing
-  const signTx = await new TokenCreateTransaction()
+  let token = new TokenCreateTransaction()
     .setTokenName(name)
     .setTokenSymbol(symbol)
     .setTreasuryAccountId(account.accountId)
     .setInitialSupply(initialSupply)
-    .setMaxTransactionFee(new Hbar(maxTxFee)) // Change the default max transaction fee
+    .setDecimals(decimals)
+    .setMaxTransactionFee(new Hbar(maxTxFee))
     .setAdminKey(publicKey)
     .setSupplyKey(publicKey)
     .setFreezeKey(publicKey)
     .setPauseKey(publicKey)
-    .setWipeKey(publicKey)
-    .freezeWith(client)
-    .sign(pK);
+    .setWipeKey(publicKey);
+
+  if (supply.type === "finite") {
+    token = token
+      .setSupplyType(TokenSupplyType.Finite)
+      .setMaxSupply(Number(supply.max_supply));
+  }
+
+  const signTx = await token.freezeWith(client).sign(pK);
 
   // Sign the transaction with the client operator private key and submit to a
   // Hedera network

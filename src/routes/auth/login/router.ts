@@ -17,6 +17,7 @@ export const router: ExpressRouter = async () => {
     errorHandler(async (req, res) => {
       const { email, password } = req.body;
       const user = await prisma.user.findFirst({ where: { email: email } });
+      console.log(user);
 
       // Check User and password
       if (!user || !user.password)
