@@ -16,6 +16,7 @@ const lucia = new Lucia(prismaAdapter, {
       role: attributes.role,
       email: attributes.email,
       hederaAcId: attributes.hederaAccId,
+      hederaPvtKey: attributes.hederaPvtKey,
     };
   },
 });
@@ -32,6 +33,7 @@ interface DatabaseUserAttributes {
   role: User["role"];
   email: string;
   hederaAccId: string;
+  hederaPvtKey: string;
 }
 
 export { lucia, client as prismaClient };

@@ -5,7 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // directUrl      = env("DIRECT_URL")
+  directUrl      = env("DIRECT_URL")
 }
 
 model User {
@@ -16,6 +16,7 @@ model User {
 
   hederaAccId     String
   hederaPubKey    String
+  hederaPvtKey    String?
 
   status          Status
   role            Role           @default(MEMBER)

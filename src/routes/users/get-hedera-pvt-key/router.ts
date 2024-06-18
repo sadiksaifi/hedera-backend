@@ -11,9 +11,7 @@ export const router: ExpressRouter = async () => {
       const user = await prismaClient.user.findFirst({
         where: { id: res.locals.user.id },
       });
-      res
-        .status(200)
-        .json({ ...user, password: undefined, hederaPvtKey: undefined });
+      res.status(200).send(user?.hederaPvtKey);
     })
   );
 

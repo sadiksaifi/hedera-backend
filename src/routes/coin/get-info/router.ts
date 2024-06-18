@@ -12,13 +12,18 @@ export const router: ExpressRouter = async () => {
     validateRequest({ query: SCoinInfo }),
     errorHandler(async (req, res) => {
       const { tokenId, ...token } = await getCoinInfo(req.query);
+
+      console.log(token.totalSupply.toNumber() / Math.pow(10, token.decimals));
+
       res.status(200).json({
         data: {
           ...token,
-          supply: token.totalSupply.toString(),
           tokenId: tokenId.toString(),
           supplyType: token.supplyType?.toString(),
-          maxSupply: token.maxSupply?.toString(),
+          maxSupply: token.maxSupply
+            ? token.maxSupply.toNumber() / Math.pow(10, token.decimals)
+            : null,
+          supply: token.totalSupply.toNumber() / Math.pow(10, token.decimals),
           tokenType: token.tokenType?.toString().split("_").join(" "),
         },
       });

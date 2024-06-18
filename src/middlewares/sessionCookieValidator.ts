@@ -30,6 +30,7 @@ export const getSession = errorHandler(
       res.locals.userId = null;
       res.locals.userRole = null;
       res.locals.user = null;
+      res.locals.hederaPvtKey = null;
       return next();
     }
 
@@ -49,6 +50,7 @@ export const getSession = errorHandler(
     res.locals.userId = user?.id || null;
     res.locals.userRole = user?.role || null;
     res.locals.session = session;
+    res.locals.hederaPvtKey = user?.hederaPvtKey || null;
     // ===================================================================
 
     next();

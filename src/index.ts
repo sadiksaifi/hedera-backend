@@ -21,6 +21,7 @@ declare global {
       userId: string | null;
       userRole: User["role"] | null;
       email: User["email"] | null;
+      hederaPvtKey: string | null;
 
       user: LuciaUser | null;
       session: Session | null;
@@ -36,7 +37,7 @@ declare module "jsonwebtoken" {
 }
 
 (async function main() {
-  createFirstAccount();
+  // createFirstAccount();
 
   app.use(cookieParser());
   app.use(express.json());

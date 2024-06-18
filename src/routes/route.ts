@@ -20,6 +20,7 @@ import { router as deleteUser } from "./master/delete-user/router";
 import { router as login } from "./auth/login/router";
 import { router as setPassword } from "./auth/set-password/router";
 import { router as whoAmI } from "./whoami/router";
+import { router as getHederaPvtKey } from "./users/get-hedera-pvt-key/router";
 import { router as logOut } from "./logout/router";
 import { router as getAllUsers } from "./users/router";
 import { router as updateHederaAccount } from "./users/update-hedera-account/router";
@@ -41,6 +42,7 @@ export const router: ExpressRouter = async () => {
 
   router.use("/whoami", await whoAmI());
   router.use("/logout", await logOut());
+  router.use("/users/get-hedera-pvt-key", await getHederaPvtKey());
 
   // ====================== Roles Controller ===============
   router.use("/users", await getAllUsers());

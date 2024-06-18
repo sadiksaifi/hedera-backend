@@ -181,7 +181,7 @@ const transferCoin = async ({
   to,
   amount,
   privateKey,
-}: TTransfer & { from: string }) => {
+}: TTransfer & { from: string; privateKey: string }) => {
   const tokenTransferTx = await new TransferTransaction()
     .addTokenTransfer(id, from, -1 * amount)
     .addTokenTransfer(id, to, amount)

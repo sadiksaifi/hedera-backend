@@ -14,7 +14,13 @@ export const router: ExpressRouter = async () => {
       const from = res.locals.user?.hederaAcId;
       if (!from) throw new Error("For some reason from not found in locals");
       const body = req.body;
-      const transferRx = await transferCoin({ ...body, from });
+      if (!res.locals.hederaPvtKey)
+        throw new Error("Your pvt key not found in db");
+      const transferRx = await transferCoin({
+        ...body,
+        from,
+        privateKey: res.locals.hederaPvtKey,
+      });
       res.status(200).json({ data: { ...transferRx } });
     })
   );
