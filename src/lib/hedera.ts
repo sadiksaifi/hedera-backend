@@ -79,7 +79,7 @@ const createAccount = async () => {
   const privateKey = PrivateKey.generateECDSA();
   const transaction = new AccountCreateTransaction()
     .setKey(privateKey.publicKey)
-    .setInitialBalance(new Hbar(500));
+    .setInitialBalance(new Hbar(10).toTinybars());
   const txResponse = await transaction.execute(client);
   const receipt = await txResponse.getReceipt(client);
   const newAccountId = receipt.accountId;
@@ -106,7 +106,7 @@ const createStableCoin = async ({
     .setTokenName(name)
     .setTokenSymbol(symbol)
     .setTreasuryAccountId(account.accountId)
-    .setInitialSupply(initialSupply)
+    .setInitialSupply(Number(initialSupply))
     .setDecimals(decimals)
     .setMaxTransactionFee(new Hbar(maxTxFee))
     .setAdminKey(publicKey)

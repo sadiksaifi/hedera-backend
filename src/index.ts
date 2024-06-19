@@ -8,8 +8,6 @@ import { getSession } from "./middlewares/sessionCookieValidator";
 import { Session, User as LuciaUser } from "lucia";
 import { authorize } from "./middlewares/authorization";
 import { logger } from "./middlewares/logger";
-import { createFirstAccount } from "./test/createFirstMaster";
-// import { createFirstAccount } from "./test/createFirstMaster";
 
 const app = express();
 config();
