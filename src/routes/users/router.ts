@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { errorHandler } from "@/middlewares/errorHandler";
-import { prismaClient } from "@/lib/auth";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -11,7 +10,15 @@ export const router: ExpressRouter = async () => {
     "/",
     errorHandler(async (_, res) => {
       const users = await prisma.user.findMany({
-        include: { permissions: true },
+        select: {
+          permissions: true,
+          id: true,
+          email: true,
+          role: true,
+          name: true,
+          status: true,
+          hederaAccId: true,
+        },
       });
       res.status(200).json(users);
     })

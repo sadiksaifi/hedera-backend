@@ -162,7 +162,13 @@ const grantKyc = async ({
   return;
 };
 
-const associate = async ({ account, tokenId }: TAssociateCoin) => {
+const associate = async ({
+  account,
+  tokenId,
+}: {
+  account: { id: string; key: string };
+  tokenId: string;
+}) => {
   let associateTx = await new TokenAssociateTransaction()
     .setAccountId(account.id)
     .setTokenIds([tokenId])

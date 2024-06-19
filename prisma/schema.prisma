@@ -14,8 +14,8 @@ model User {
   email           String         @unique
   password        String?
 
-  hederaAccId     String
-  hederaPubKey    String
+  hederaAccId     String?
+  hederaPubKey    String?
   hederaPvtKey    String?
 
   status          Status
