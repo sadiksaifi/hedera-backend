@@ -7,6 +7,7 @@ import { sendMail } from "@/lib/sendMail";
 import jwt from "jsonwebtoken";
 import fs from "fs";
 import { cwd } from "process";
+import { createAccount } from "@/lib/hedera";
 
 const prisma = new PrismaClient();
 
@@ -17,9 +18,11 @@ export const router: ExpressRouter = async () => {
     "/",
     validateRequestBody(SNewUser),
     errorHandler(async (req, res) => {
-      const { name, email, hederaAccId, hederaPubKey } = req.body;
+      const { name, email } = req.body;
 
       const payload = { email };
+
+      const account = await createAccount();
 
       // Stores the variables for the email template
       const variables = {
@@ -42,8 +45,7 @@ export const router: ExpressRouter = async () => {
       const user = await prisma.user.create({
         data: {
           name,
-          hederaAccId,
-          hederaPubKey,
+          ...account,
           email,
           role: "MEMBER",
           status: "PENDING",

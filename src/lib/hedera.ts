@@ -3,7 +3,6 @@ import { TFreeze } from "@/schemas/coin/freeze";
 import { TNewCoin } from "@/schemas/coin/create";
 import { TCashIn } from "@/schemas/coin/cashin";
 import { TTransfer } from "@/schemas/coin/transfer";
-import { TAssociateCoin } from "@/schemas/coin/associate";
 import { TDeleteCoin } from "@/schemas/coin/delete";
 import {
   Client,
@@ -23,6 +22,7 @@ import {
   TokenPauseTransaction,
   TokenUnpauseTransaction,
   TokenSupplyType,
+  AccountCreateTransaction,
 } from "@hashgraph/sdk";
 import {
   KYCRequest,
@@ -74,6 +74,24 @@ const account: RequestAccount = {
 export const pK = PrivateKey.fromStringDer(privateKey.key);
 const client = Client.forTestnet();
 client.setOperator(account.accountId, pK);
+
+const createAccount = async () => {
+  const privateKey = PrivateKey.generateECDSA();
+  const transaction = new AccountCreateTransaction()
+    .setKey(privateKey.publicKey)
+    .setInitialBalance(new Hbar(500));
+  const txResponse = await transaction.execute(client);
+  const receipt = await txResponse.getReceipt(client);
+  const newAccountId = receipt.accountId;
+  if (!newAccountId)
+    throw new Error("Account creation error, newAccountId not found");
+
+  return {
+    hederaAccId: newAccountId.toString(),
+    hederaPubKey: privateKey.publicKey.toStringDer(),
+    hederaPvtKey: privateKey.toStringDer(),
+  };
+};
 
 const createStableCoin = async ({
   name,
@@ -401,6 +419,7 @@ const deleteStableCoin = async ({ tokenId }: TDeleteCoin) => {
 
 export {
   client,
+  createAccount,
   createStableCoin,
   cashIn,
   grantKyc,
