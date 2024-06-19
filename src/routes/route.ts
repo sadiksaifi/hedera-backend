@@ -14,7 +14,6 @@ import { router as updateTokenRouter } from "./role/update/router";
 import { router as burnCoin } from "./coin/burn/router";
 import { router as grantPermission } from "./admin/permissions/grant/router";
 import { router as revokePermission } from "./admin/permissions/revoke/router";
-import { router as getBalances } from "./coin/get-balances/router";
 import { router as createUser } from "./master/create-user/router";
 import { router as deleteUser } from "./master/delete-user/router";
 import { router as login } from "./auth/login/router";
@@ -57,7 +56,6 @@ export const router: ExpressRouter = async () => {
   router.use("/coin/cashin", await cashInCoin());
   router.use("/coin/get-info", await getInfo());
   router.use("/coin/burn", await burnCoin());
-  router.use("/coin/get-balances", await getBalances());
   router.use("/coin/pause", await pauseCoin());
   router.use("/coin/unpause", await unpauseCoin());
   router.use("/treasury", await treasury());

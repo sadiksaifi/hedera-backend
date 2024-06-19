@@ -218,7 +218,7 @@ const getCoinInfo = async ({ tokenId }: TCoinInfo) => {
  */
 const getTreasury = async ({ accountId }: { accountId: string }) => {
   const res = await fetch(
-    `https://testnet.mirrornode.hedera.com/api/v1/balances?account.id=${accountId}`,
+    `https://testnet.mirrornode.hedera.com/api/v1/accounts/${accountId}/tokens`,
     {
       method: "GET",
       headers: {},
@@ -242,7 +242,7 @@ const getTreasury = async ({ accountId }: { accountId: string }) => {
   //     tokens[CurrentCoin.id].tokenId
   //   }`
   // );
-  return (await res.json()).balances[0].tokens;
+  return (await res.json()).tokens.reverse();
 };
 
 const freezeStableCoin = async ({ addressId, tokenId }: TFreeze) => {

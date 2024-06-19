@@ -10,17 +10,20 @@ export const router: ExpressRouter = async () => {
     errorHandler(async (_, res) => {
       if (!res.locals.user) throw new Error("You are not authorized");
 
-      const tokenList: { token_id: string; balance: string }[] =
-        await getTreasury({ accountId: res.locals.user.hederaAcId });
+      const allTokens: {
+        token_id: string;
+        balance: number;
+        decimals: number;
+      }[] = await getTreasury({ accountId: res.locals.user.hederaAcId });
 
       const data = await Promise.all(
-        tokenList.map(async (token) => {
+        allTokens.map(async (token) => {
           const { tokenId, ...tokenInfo } = await getCoinInfo({
             tokenId: token.token_id,
           });
           return {
             tokenId: tokenId.toString(),
-            myBalance: token.balance,
+            myBalance: token.balance / Math.pow(10, token.decimals),
             name: tokenInfo.name,
             symbol: tokenInfo.symbol,
             isDeleted: tokenInfo.isDeleted,
