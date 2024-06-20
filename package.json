@@ -8,7 +8,8 @@
     "dev": "nodemon ./src/index.ts",
     "tsc": "tsc",
     "build": "esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js --format=cjs",
-    "migrate": "prisma migrate dev --name init && prisma generate"
+    "db:migrate": "prisma migrate dev --name init && prisma generate",
+    "db:generate": "prisma generate"
   },
   "keywords": [],
   "author": "",
