@@ -34,4 +34,4 @@ Only authenticated users are allowed to create a coin
 Note: Public key of the treasury is being used as the AdminKey, SupplyKey and the FreezeKey of any new token created
 ```
 
-- Testing CI
+- Testing CI 2
